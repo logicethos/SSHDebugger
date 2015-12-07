@@ -1,0 +1,325 @@
+﻿// 
+// clsHost.cs
+//  
+// Author:
+//		 Stuart Johnson <stuart@logicethos.com>
+// 
+// Copyright (c) 2015 Stuart Johnson, Logic Ethos Ltd.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using System.IO;
+using Mono.Debugging.Soft;
+using Gtk;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using System.Net;
+using MonoDevelop.Projects;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+
+namespace SSHDebugger
+{
+	public class clsHost
+	{
+
+		public String LocalHost { get; private set;}
+		public UInt32 LocalTunnelPort { get; private set;}
+		public UInt32 RemoteTunnelPort { get; private set;}
+
+		public String Name { get; private set;}
+		public int RemoteSSHPort { get; private set;}
+		public String ScriptPath { get; private set;}
+
+
+		public String Username { get; private set;}
+		public String Password { get; set;}
+		public String RemoteHost { get; private set;}
+
+		public String WorkingDir { get; private set;}
+
+		public String buildpath { get; private set;}
+
+		public String TerminalFont { get; private set;}
+		public int TerminalRows { get; private set;}
+		public int TerminalCols { get; private set;}
+
+		clsSSHTerminal terminal = null;
+
+		String _hostString;
+		public String HostString
+		{
+			get { return _hostString;}
+
+			private set
+			{
+				_hostString = value;
+
+				var pt1 = value.IndexOf ('@');
+				var pt2 = value.IndexOf (':');
+				if (pt1 > -1) Username = value.Substring (0, pt1);
+				if (pt2 < pt1) {
+					var userSplit = Username.Split (new char[]{ ':' }, 2);
+					Username = userSplit[0];
+					Password = userSplit[1];
+					pt2 = value.IndexOf (':',pt1);
+				}
+
+				if (pt2 > -1) {
+					RemoteSSHPort = int.Parse (value.Substring (pt2 + 1, value.Length - pt2 - 1));
+				} else {
+					RemoteSSHPort = 21;
+					pt2 = value.Length;
+				}
+				RemoteHost = value.Substring (pt1+1, pt2 - pt1 -1);
+			}
+		}
+
+
+
+		public clsHost (String filePath)
+		{	
+			var buildTarget = MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			var buildConfigs = ((DotNetProject)buildTarget).Configurations;
+			buildpath = buildConfigs.Cast<DotNetProjectConfiguration> ().First (x => x.DebugMode).CompiledOutputName;
+
+			ScriptPath = filePath;
+			LocalHost = IPAddress.Loopback.ToString ();
+			LocalTunnelPort = 10123;
+
+			TerminalFont = "Monospace 10";
+			TerminalCols = 120;
+			TerminalRows = 50;
+
+			ProcessScript (false,null);
+			clsSSHDebuggerEngine.HostsList.Add (this);
+		}
+
+		public SoftDebuggerStartInfo StartScript(clsSSHTerminal terminal)
+		{
+			return ProcessScript (true,terminal);
+		}
+
+		SoftDebuggerStartInfo ProcessScript(bool Execute, clsSSHTerminal terminal)
+		{
+
+			this.terminal = terminal;
+				
+			if (terminal != null) terminal.WriteLine("Running script: {0}",Path.GetFileName(ScriptPath));
+			int ConsolePort = -1;
+			int LineCount = 0;
+
+			try {
+				
+				using (var fs = File.OpenText (ScriptPath)) {
+					String linein;
+					while ((linein = fs.ReadLine ()) != null) {
+						LineCount++;
+						linein = ReplaceVarsInString(linein.Trim ());
+						if (linein == "" || linein.StartsWith ("#") || linein.StartsWith ("//"))
+							continue;
+						if (linein.StartsWith ("<")) {
+						//	if (Execute)
+						} else if (linein.StartsWith (">")) {
+							if (Execute) terminal.Execute(linein.Substring(1));
+						} else if (linein.StartsWith ("&>")) {
+							if (Execute) terminal.ExecuteAsync(linein.Substring(2));
+
+						} else if (linein.StartsWith ("s>") || linein.StartsWith ("S>")) {
+							if (Execute) terminal.ShellExecute(linein.Substring(2));
+						} else {
+							var commandLine = linein.Split (new char[]{ ' ', '=' }, 2);
+							var command = commandLine [0].Trim ();
+							String commandArgs = "";
+							if (commandLine.Length > 1) {
+								commandArgs = commandLine [1].Trim ();
+								if (commandArgs.StartsWith ("="))
+									commandArgs = commandArgs.Substring (1).TrimStart ();
+							}
+
+							switch (command.ToLower ()) {
+								case "host":
+									HostString = commandArgs;
+									break;
+								case "name":
+									Name = commandArgs;
+									break;
+								case "consoleport":
+									ConsolePort = int.Parse(commandArgs);
+									break;
+								case "localhost":
+									LocalHost = commandArgs;
+									break;
+								case "localtunnelport":
+									LocalTunnelPort = UInt32.Parse(commandArgs);
+									break;
+								case "remotetunnelport":
+									RemoteTunnelPort = UInt32.Parse(commandArgs);
+									break;
+								case "workingdir":
+								case "workingdirectory":
+									WorkingDir = commandArgs;
+									break;
+
+								case "terminalfont":
+									TerminalFont = commandArgs;
+									break;
+								case "terminalrows":
+									TerminalRows = int.Parse(commandArgs);
+									break;
+								case "terminalcols":
+									TerminalCols = int.Parse(commandArgs);
+									break;
+								case "privatekeyfile":
+									terminal.AddPrivateKeyFile(commandArgs);								
+									break;
+								default:
+								{
+									if (Execute)
+									{
+										switch (command.ToLower ())
+										{
+											case "scp-copy": // $exe-file $mdb-file
+												foreach (var file in commandArgs.Split(new char[]{' '}))
+												{
+													terminal.UploadFile(file);
+												}
+												break;
+											case "starttunnel": 
+												if (!terminal.StartTunnel(LocalTunnelPort,RemoteTunnelPort)) return null;
+												break;
+											case "sleep":
+												Thread.Sleep(int.Parse(commandArgs)*1000);
+												break;
+											default:
+											if (terminal != null) terminal.WriteLine ("Script Error (Line {0}): {1} Unkown command", LineCount, linein);
+												break;
+										}
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
+				if (Execute) return DebuggerInfo(ConsolePort);
+			} catch (Exception ex) {
+				if (terminal != null) {
+					terminal.WriteLine ("Script Error (Line {0}): {1}", LineCount, ex.Message);
+				} else {
+					Gtk.Application.Invoke (delegate {
+						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, String.Format("Line {0}:{1}",LineCount, ex.Message))) {
+							md.Title = "ProcessScript";
+							md.Run ();
+							md.Destroy ();
+						}
+					});	
+				}
+			}
+			finally {
+
+			}
+			return null;
+		}
+
+		String ReplaceVarsInString (String input)
+		{
+			var sb = new StringBuilder ();
+			int pt0 = 0;
+			int pt1,pt2;
+
+			while ((pt1 = input.IndexOf ("$[",pt0)) != -1)
+			{
+				pt2 = input.IndexOf ("]", pt1);
+				sb.Append (input.Substring (pt0, pt1-pt0));
+				pt0 = pt2 + 1;
+				sb.Append (GetVar(input.Substring(pt1 + 2, pt2 - pt1 - 2)));
+			}
+
+			if (pt0 == 0) return input;
+			if (pt0 < input.Length-1) sb.Append (input.Substring (pt0));
+			return sb.ToString ();
+		}
+
+		String GetVar (String input)
+		{
+			switch (input)
+			{
+			case "exe-path":
+				return buildpath;
+			case "mdb-path":
+				return buildpath + ".mdb";
+			case "RemoteTunnelPort":
+				return RemoteTunnelPort.ToString ();
+			case "exe-file":
+				return Path.GetFileName (buildpath);
+			default:
+				return "?";
+					
+			}
+		}
+
+
+		public SoftDebuggerStartInfo DebuggerInfo (int consolePort = -1)
+		{
+			try
+			{
+
+				IPAddress[] addresslist = Dns.GetHostAddresses(LocalHost);
+
+				var	startArgs = new SoftDebuggerConnectArgs ("", addresslist[0], (int)LocalTunnelPort, consolePort) {
+						//infinite connection retries (user can cancel), 800ms between them
+						TimeBetweenConnectionAttempts = 800,
+						MaxConnectionAttempts = -1,			
+				};
+
+				var dsi = new SoftDebuggerStartInfo (startArgs) {
+						Command = "",
+						Arguments = ""
+				};
+
+				if (terminal != null) terminal.WriteLine ("Configuring debugger {0}:{1}",addresslist[0], (int)LocalTunnelPort);
+
+				return dsi;
+
+			}
+			catch (Exception ex)
+			{
+
+				if (terminal != null) {
+					terminal.WriteLine ("SoftDebuggerStartInfo Error {0}", ex.Message);
+				} else {
+					Gtk.Application.Invoke (delegate {
+						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, String.Format("SoftDebuggerStartInfo Error {0}", ex.Message))) {
+							md.Title = "ProcessScript";
+							md.Run ();
+							md.Destroy ();
+						}
+					});	
+				}
+				return null;
+			}
+		}
+			
+	}
+}
+

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>ProjectTemplate</_Name>
+	</TemplateConfiguration>
+	<Actions>
+	</Actions>
+	<Combine name="RemoteDebug" directory=".">
+		<Options>
+			<StartupProject>RemoteDebug</StartupProject>
+		</Options>
+		<Project name="RemoteDebug" directory=".">
+			<References>
+			</References>
+			<Packages>
+			</Packages>
+			<Files>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

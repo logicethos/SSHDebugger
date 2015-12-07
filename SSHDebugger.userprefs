@@ -1,0 +1,23 @@
+﻿<Properties StartupItem="SSHDebugger/SSHDebugger.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SSHDebugger/clsSSH.cs">
+    <Files>
+      <File FileName="SSHDebugger/Properties/Manifest.addin.xml" Line="1" Column="1" />
+      <File FileName="SSHDebugger/Properties/AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/Properties/AddinInfo.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/clsSSH.cs" Line="142" Column="34" />
+      <File FileName="SSHDebugger/ssh-host.xft.xml" Line="1" Column="1" />
+      <File FileName="SSHDebugger/DebuggerHosts/clsHost.cs" Line="1" Column="1" />
+      <File FileName="../../../../usr/lib/mono/4.5/Microsoft.Common.targets" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/home/stuart/Projects/SSHDebugger/SSHDebugger/Debugger/clsCustomSoftDebuggerSession.cs" line="22" column="29" />
+      <Breakpoint file="/home/stuart/Projects/SSHDebugger/SSHDebugger/Debugger/clsSSHDebuggerEngine.cs" line="115" column="17" />
+      <Breakpoint file="/home/stuart/Projects/SSHDebugger/SSHDebugger/clsSSH.cs" line="454" column="56" />
+      <Breakpoint file="/home/stuart/Projects/SSHDebugger/SSHDebugger/clsSSH.cs" line="156" column="21" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

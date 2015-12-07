@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+
+<Addin id="MonoDevelop.SSHDebugger">
+    <Header>
+        <Name>SSH Debugger</Name>
+        <Name locale="en-GB">Remote SSH Debugger</Name>
+        <Description>Remotely execute, and debug via ssh</Description>
+        <Author>Stuart Johnson</Author>
+        <Url>https://github.com/logicethos/SSHDebugger</Url>
+    </Header>
+</Addin>
+
+
+<ExtensionModel>
+
+<!--	<Runtime>
+		<Import assembly="Renci.SshNet.dll"/>
+		<Import file = "ssh-host.xft.xml"/>
+	</Runtime>-->
+	
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine
+			id="SSHDebugger"
+			name="SSH Debugger"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching"
+			type="SSHDebugger.clsSSHDebuggerEngine" />
+	</Extension>
+
+
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class="SSHDebugger.clsStartup" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate
+			id = "sshhosttemplate"
+			file="ssh-host.xft.xml"/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/CustomTools">
+		<Tool name="CustomTools" type="CustomTools" />
+	</Extension>
+
+
+
+
+</ExtensionModel>
