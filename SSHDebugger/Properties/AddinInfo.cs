@@ -16,5 +16,6 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("::MonoDevelop.Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("::MonoDevelop.Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("::MonoDevelop.Debugger", MonoDevelop.BuildInfo.Version)]
-[assembly:AddinDependency ("::MonoDevelop.SourceEditor2", MonoDevelop.BuildInfo.Version)]
 
+[assembly:Mono.Addins.ImportAddinAssembly("Renci.SshNet.dll")]
+[assembly:Mono.Addins.ImportAddinAssembly("vte-sharp.dll")]
