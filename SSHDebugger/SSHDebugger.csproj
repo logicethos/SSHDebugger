@@ -56,10 +56,8 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="vte-sharp, Version=0.16.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Package>vte-sharp-0.16</Package>
-      <Private>True</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="vte-sharp">
+      <HintPath>..\vte-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
