@@ -28,8 +28,9 @@ Dependencies:
  * libgnome2.0-cil-dev
  * libvte-dev
 
-Future improvments:
+Suggested future improvements:
 
-* Improve Xterm Terminal (Fully managed to remove Gnome dependency?)
-* C# pre-debug scripting
-* Option to Detach & Reattach debugger?
+ * Improve Xterm Terminal, flesh out the UI, copy, paste, go fully managed to remove Gnome VTE dependency?
+ * C# pre-debug scripting
+ * Option to Detach & Reattach debugger?
+ * Wizard to prepare a host, setup password-less login & customise script.
