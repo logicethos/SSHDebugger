@@ -16,14 +16,15 @@
 		<File DefaultExtension=".ssh.txt" buildAction="None">
 <![CDATA[
 #SSH Debug Script file
-# Minimum requirment: Edit the 'Host' below, and make sure your remote ssh host has mono installed, and sshd.
+# Minimum requirement: Edit the 'Host' below, and make sure your remote ssh host has mono installed, and sshd.
 
-# This file is executed sequencially, prior to debugging.
+# This file is executed sequentially, prior to debugging.
 # To execute console commands, use the prefix:
 #   '<' or '&<' for local synchronous or asynchronous operation.
 #   '>' or '&>' for remote synchronous or asynchronous operation.
 #   's>' for synchronous shell input/output.
 
+# Remember: you may want to add this file to your repository ignore file. (*.xft.ssh)
 
 Name = My Remote Host
 Host = user@host[:port]
