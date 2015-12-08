@@ -11,15 +11,17 @@ Uses:
 
 Features:
   
- * Full XTerm console to support MonoCurses apps, and remote keyboard input.
+ * Requires no port forwarding, or special firewall rules. Just ssh access to the host.
+ * Built-in XTerm console to support MonoCurses, Console.Output() & Console.Input().
  * Simple pre-debug scripting, to copy your build files to the remote host.
- * Build scripts for different devices.
- * Secure communication for debugging over the internet.
+ * Build scripts for different devices, and store them in your project.
+ * Secure communication.
 
 Steps for use:
  1. Make sure your your computer has mono installed, and is accessible from ssh.
  2. Add the SSH Debugger template from this add-in to your project, and change the host address.
- 3. Run -> Run With -> SSH Debugger
+ 3. Add any dependency files to the script (dll's, data etc) for copying (scp or rsync).
+ 4. Run -> Run With -> SSH Debugger
   
 Dependencies:
 
@@ -31,6 +33,9 @@ Dependencies:
 Suggested future improvements:
 
  * Improve Xterm Terminal, flesh out the UI, copy, paste, go fully managed to remove Gnome VTE dependency?
- * C# pre-debug scripting
- * Option to Detach & Reattach debugger?
- * Wizard to prepare a host, setup password-less login & customise script.
+ * Automate template generation, to fill in known Dependencies.
+ * Default to rsync where available, or scp only files that have changed.
+ * C# pre-debug scripting.
+ * Option to Detach & Reattach debugger? Reconnect if connection lost?
+ * Wizard to prepare a host, test for stability, setup password-less login using private keys.
+ * Add more customisation to script (e.g SOCKS support, default Xterm settings).
