@@ -5,7 +5,7 @@ using Mono.Addins.Description;
 [assembly:Addin (
 	"SSHDebugger", 
 	Namespace = "SSHDebugger",
-	Version = "1.0"
+	Version = "0.1"
 )]
 
 [assembly:AddinName ("SSHDebugger")]

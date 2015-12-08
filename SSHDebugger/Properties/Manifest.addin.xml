@@ -14,11 +14,6 @@
 
 <ExtensionModel>
 
-<!--	<Runtime>
-		<Import assembly="Renci.SshNet.dll"/>
-		<Import file = "ssh-host.xft.xml"/>
-	</Runtime>-->
-	
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
 			id="SSHDebugger"
@@ -26,7 +21,6 @@
 			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching"
 			type="SSHDebugger.clsSSHDebuggerEngine" />
 	</Extension>
-
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class="SSHDebugger.clsStartup" />
@@ -41,8 +35,6 @@
 	<Extension path="/MonoDevelop/Ide/CustomTools">
 		<Tool name="CustomTools" type="CustomTools" />
 	</Extension>
-
-
 
 
 </ExtensionModel>
