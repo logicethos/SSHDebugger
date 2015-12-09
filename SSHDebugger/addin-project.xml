@@ -1,8 +1,6 @@
 ﻿<AddinProject appVersion="5.10">
 	<Project platforms="Mac Linux">
 		<AddinFile>SSHDebugger/bin/Release/SSHDebugger.dll</AddinFile>
-		<AddinFile>SSHDebugger/bin/Release/Renci.SshNet.dll</AddinFile>
-		<AddinFile>SSHDebugger/bin/Release/vte-sharp.dll</AddinFile>
 		<BuildFile>SSHDebugger.sln</BuildFile>
 		<BuildConfiguration>Release</BuildConfiguration>
 	</Project>
