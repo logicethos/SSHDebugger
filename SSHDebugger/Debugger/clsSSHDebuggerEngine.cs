@@ -109,15 +109,32 @@ namespace SSHDebugger
 						DebuggerSession.Exit();
 					};
 	
-					dsi = selectedHost.StartScript(sshTerminal);
+					dsi = selectedHost.ProcessScript(true,sshTerminal);
 				
 				}
-				sshTerminal.WriteLine("Starting debugger");
-				return dsi;
+
+				if (dsi != null)
+				{
+					sshTerminal.WriteLine("Starting debugger");
+					return dsi;
+				}
+				else
+				{
+					sshTerminal.RequestUserInput("Error - press return to quit");
+					sshTerminal.Dispose();
+					return null;
+				}
 			}
 			catch (Exception ex)
 			{
-				sshTerminal.WriteLine("CreateDebuggerStartInfo: Error {0}",ex.Message);
+				Gtk.Application.Invoke (delegate
+					{
+						using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start VTE terminal"))
+						{
+							md.Run ();
+							md.Destroy();
+						}
+					});
 				return null;
 			}
 			
@@ -152,9 +169,7 @@ namespace SSHDebugger
 					dlg.Destroy();
 				}
 
-
 				while (GLib.MainContext.Iteration ());
-
 					
 				if (response == Gtk.ResponseType.Accept) {
 

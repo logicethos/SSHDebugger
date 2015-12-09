@@ -142,6 +142,14 @@ namespace SSHDebugger
 			Gtk.Application.Invoke (delegate {
 				term.Feed (output);
 			});
+
 		}
+
+		public override void Dispose()
+		{
+			userkeypress.Dispose();
+			base.Dispose();
+		}
+
 	}
 }

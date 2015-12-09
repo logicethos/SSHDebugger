@@ -42,7 +42,6 @@ namespace SSHDebugger
 	{
 		List<PrivateKeyFile> PrivateKeyFileList = new List<PrivateKeyFile>();
 
-		public string RemoteWorkingDirectory { get; set; }
 
 		clsHost Host;
 
@@ -113,7 +112,6 @@ namespace SSHDebugger
 											sshClient.ConnectionInfo.MaxSessions,
 											sshClient.ConnectionInfo.Encoding,											
 											sshClient.ConnectionInfo.CurrentServerEncryption);
-
 						return true;
 					}
 				}
@@ -138,19 +136,25 @@ namespace SSHDebugger
 					this.WriteLine("*** Console Stream Start");
 	
 					shellStream = sshClient.CreateShellStream("xterm",(uint)Host.TerminalCols,(uint)Host.TerminalRows,0,0,4096);
-					started.Set();
+					
 				
 					shellStream.DataReceived += (object sender, ShellDataEventArgs e) => 
 					{
-							Write(Encoding.UTF8.GetString(e.Data,0,e.Data.Length));
+						Write(Encoding.UTF8.GetString(e.Data,0,e.Data.Length));
 					};
 
 					shellStream.ErrorOccurred+= (object sender, ExceptionEventArgs e) => 
 					{
-							WriteLine(e.Exception.Message);
-							keepShellAlive.Set();
+						WriteLine(e.Exception.Message);
+						keepShellAlive.Set();
 					};
 
+					if (!String.IsNullOrEmpty(Host.WorkingDir))
+					{
+						this.Write("Changing dir: {0}...",Host.WorkingDir);
+						shellStream.WriteLine(String.Format("cd {0}\r\n",Host.WorkingDir));
+					}
+					started.Set();
 					keepShellAlive.Reset();
 					keepShellAlive.WaitOne();
 
@@ -215,22 +219,24 @@ namespace SSHDebugger
 					{
 						this.WriteLine("OK");
 									
-
-					if (!String.IsNullOrEmpty(RemoteWorkingDirectory))
-					{
-						try
+						if (!String.IsNullOrEmpty(Host.WorkingDir))
 						{
-							this.Write("Changing dir: {0}...",RemoteWorkingDirectory);
-							sftpClient.ChangeDirectory (RemoteWorkingDirectory);
-						}catch(Exception ex)
-						{
-							this.WriteLine("FAILED\r\n{0}",ex.Message);
+							var scpPath = Host.WorkingDir.Replace("~", sftpClient.WorkingDirectory);  //this SCP library doesnt like ~
+							if (sftpClient.WorkingDirectory != scpPath)
+							{
+								try
+								{
+									this.Write("Changing dir: {0}...",scpPath);
+									sftpClient.ChangeDirectory (scpPath);
+								}catch(Exception ex)
+								{
+									this.WriteLine("FAILED\r\n{0}",ex.Message);
+									return false;
+								}
+							}
+							this.WriteLine("OK");
 						}
-						this.WriteLine("OK");
 					}
-						return true;
-					}
-
 				}
 				catch (Exception ex)
 				{
@@ -352,22 +358,28 @@ namespace SSHDebugger
 		}
 
 
-		public void UploadFile(String LocalPath, String RemoteFileName = null)
+		public bool UploadFile(String LocalPath, String RemoteFileName = null)
 		{
 
-			if (!ConnectSFTP ()) return;
+			if (!ConnectSFTP ()) return false;
 
 			if (String.IsNullOrEmpty (RemoteFileName)) RemoteFileName = System.IO.Path.GetFileName(LocalPath);
 
 			this.Write("sftp Uploading: {0}...",LocalPath);
 
-
-			using (var fs = File.OpenRead(LocalPath))
+			try
+			{	
+				using (var fs = File.OpenRead(LocalPath))
+				{
+					sftpClient.UploadFile (fs, RemoteFileName,true, (bytes) => {Write(".");});
+	
+				}
+				this.WriteLine("OK");
+				return true;
+			} catch (Exception ex)
 			{
-				sftpClient.UploadFile (fs, RemoteFileName,true, (bytes) => {Write(".");});
-
+				return false;
 			}
-			this.WriteLine("OK");
 		}
 
 		public override void Dispose()

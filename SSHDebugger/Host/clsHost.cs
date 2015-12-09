@@ -36,6 +36,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SSHDebugger
 {
@@ -114,12 +115,8 @@ namespace SSHDebugger
 			clsSSHDebuggerEngine.HostsList.Add (this);
 		}
 
-		public SoftDebuggerStartInfo StartScript(clsSSHTerminal terminal)
-		{
-			return ProcessScript (true,terminal);
-		}
 
-		SoftDebuggerStartInfo ProcessScript(bool Execute, clsSSHTerminal terminal)
+		public SoftDebuggerStartInfo ProcessScript(bool Execute, clsSSHTerminal terminal)
 		{
 
 			this.terminal = terminal;
@@ -138,7 +135,14 @@ namespace SSHDebugger
 						if (linein == "" || linein.StartsWith ("#") || linein.StartsWith ("//"))
 							continue;
 						if (linein.StartsWith ("<")) {
-						//	if (Execute)
+							if (Execute) 
+							{
+								var proc_command = linein.Substring(1).Split(new char[]{' '},2);
+								ProcessStartInfo startInfo = new ProcessStartInfo();        
+								startInfo.FileName = proc_command[0];
+								if (proc_command.Length>1) startInfo.Arguments = proc_command[1];
+								Process.Start(startInfo);
+							}							
 						} else if (linein.StartsWith (">")) {
 							if (Execute) terminal.Execute(linein.Substring(1));
 						} else if (linein.StartsWith ("&>")) {
@@ -179,7 +183,6 @@ namespace SSHDebugger
 								case "workingdirectory":
 									WorkingDir = commandArgs;
 									break;
-
 								case "terminalfont":
 									TerminalFont = commandArgs;
 									break;
@@ -201,7 +204,7 @@ namespace SSHDebugger
 											case "scp-copy": // $exe-file $mdb-file
 												foreach (var file in commandArgs.Split(new char[]{' '}))
 												{
-													terminal.UploadFile(file);
+													if (!terminal.UploadFile(file)) return null;
 												}
 												break;
 											case "starttunnel": 
