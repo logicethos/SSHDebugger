@@ -34,7 +34,7 @@ namespace SSHDebugger
 {
 	public class clsTerminal :  Window 
 	{
-		Vte.Terminal term; 
+		public Vte.Terminal term; 
 
 		public delegate void KeyPressHandler(Gdk.Key key);
 		public event KeyPressHandler KeyPress;

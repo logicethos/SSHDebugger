@@ -71,6 +71,16 @@ namespace SSHDebugger
 			};
 		}
 
+		public void SetHost(clsHost host)
+		{
+			Host = host;
+
+			Gtk.Application.Invoke (delegate {
+				Name = host.Name;
+				base.term.SetSize(host.TerminalCols,host.TerminalRows);
+			});
+		}
+
 		public void AddPrivateKeyFile(String path)
 		{
 			PrivateKeyFileList.Add(new PrivateKeyFile(path));

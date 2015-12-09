@@ -50,7 +50,7 @@ namespace SSHDebugger
 	{
 		clsSSHSoftDebuggerSession DebuggerSession = null;
 		public static List<clsHost> HostsList = new List<clsHost>();
-		public clsSSHTerminal sshTerminal = null;
+		public static clsSSHTerminal sshTerminal = null;
 		clsHost selectedHost = null;
 		ManualResetEvent termWait = new ManualResetEvent (false);
 
@@ -85,30 +85,37 @@ namespace SSHDebugger
 	
 				if (selectedHost != null) {
 
-					var threadstart = new ThreadStart (OpenTerminal);
-					Thread windowThread = new Thread(threadstart);					 
-					windowThread.IsBackground = false;
-					windowThread.Start();
-				
-
-					if (!termWait.WaitOne(1000) || sshTerminal==null)
+					if (sshTerminal == null || !sshTerminal.IsActive)
 					{
-						Gtk.Application.Invoke (delegate
-							{
-								using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start VTE terminal"))
+						Gtk.Application.Invoke (delegate {
+							sshTerminal = new clsSSHTerminal (selectedHost);
+							sshTerminal.Show();
+							while (GLib.MainContext.Iteration ());
+							termWait.Set();
+						});
+	
+						if (!termWait.WaitOne(1000) || sshTerminal==null)
+						{
+							Gtk.Application.Invoke (delegate
 								{
-									md.Run ();
-									md.Destroy();
-								}
-							});
-						return null;
+									using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start VTE terminal"))
+									{
+										md.Run ();
+										md.Destroy();
+									}
+								});
+							return null;
+						}
+	
+						sshTerminal.DeleteEvent += (o, args) => 
+						{
+							DebuggerSession.Exit();
+						};
 					}
-	
-					sshTerminal.DeleteEvent += (o, args) => 
+					else
 					{
-						DebuggerSession.Exit();
-					};
-	
+						sshTerminal.SetHost(selectedHost);
+					}
 					dsi = selectedHost.ProcessScript(true,sshTerminal);
 				
 				}
@@ -121,7 +128,6 @@ namespace SSHDebugger
 				else
 				{
 					sshTerminal.RequestUserInput("Error - press return to quit");
-					sshTerminal.Dispose();
 					return null;
 				}
 			}
@@ -142,12 +148,7 @@ namespace SSHDebugger
 
 		void OpenTerminal()
 		{
-			Gtk.Application.Invoke (delegate {
-				sshTerminal = new clsSSHTerminal (selectedHost);
-				sshTerminal.Show();
-				while (GLib.MainContext.Iteration ());
-				termWait.Set();
-			});
+
 		}
 
 		clsHost GetDebuggerInfo ()
