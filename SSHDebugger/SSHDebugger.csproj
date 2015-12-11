@@ -52,8 +52,8 @@
     <Reference Include="Mono.Debugging.Soft">
       <HintPath>..\Mono.Debugging.Soft.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
+    <Reference Include="MonoDevelop.Debugger">
+      <HintPath>..\MonoDevelop.Debugger.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
