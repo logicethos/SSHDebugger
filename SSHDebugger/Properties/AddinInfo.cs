@@ -19,3 +19,5 @@ using Mono.Addins.Description;
 
 [assembly:Mono.Addins.ImportAddinAssembly("Renci.SshNet.dll")]
 [assembly:Mono.Addins.ImportAddinAssembly("vte-sharp.dll")]
+[assembly:Mono.Addins.ImportAddinAssembly("Mono.Debugging.Soft.dll")]
+[assembly:Mono.Addins.ImportAddinAssembly("Monodevelop.Debugger.dll")]
