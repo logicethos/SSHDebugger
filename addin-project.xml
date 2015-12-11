@@ -1,7 +1,7 @@
 ﻿<AddinProject appVersion="5.0">
 	<Project platforms="Mac Linux">
-		<AddinFile>SSHDebugger/bin/Debug/SSHDebugger.dll</AddinFile>
+		<AddinFile>SSHDebugger/bin/Release/SSHDebugger.dll</AddinFile>
 		<BuildFile>SSHDebugger.sln</BuildFile>
-		<BuildConfiguration>Debug</BuildConfiguration>
+		<BuildConfiguration>Release</BuildConfiguration>
 	</Project>
 </AddinProject>
