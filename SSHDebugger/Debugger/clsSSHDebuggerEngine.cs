@@ -34,7 +34,6 @@ using MonoDevelop.Core.Execution;
 using System.Net;
 using System.Collections.Generic;
 using Mono.Debugging.Soft;
-using MonoDevelop.Debugger;
 using MonoDevelop.Ide;
 using System.Linq;
 using Gtk;
@@ -42,6 +41,7 @@ using System.IO;
 using MonoDevelop.Projects;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Debugger;
 
 
 namespace SSHDebugger

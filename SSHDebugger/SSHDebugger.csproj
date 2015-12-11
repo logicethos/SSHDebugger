@@ -46,18 +46,14 @@
     <Reference Include="Renci.SshNet">
       <HintPath>..\Renci.SshNet.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral">
-      <Private>True</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
-      <Private>True</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
     <Reference Include="vte-sharp">
       <HintPath>..\vte-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft">
+      <HintPath>..\Mono.Debugging.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
