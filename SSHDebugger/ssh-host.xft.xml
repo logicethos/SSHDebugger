@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <Template Originator   = "Logic Ethos Ltd"
-          Created      = "2016/01/01"
-          LastModified = "2016/01/01">	
+          Created      = "2015/12/01"
+          LastModified = "2015/12/01">	
 	
 	<TemplateConfiguration>
 		<_Name>SSH Debug Host</_Name>

@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle ("SSHDebugger")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("")]
+[assembly: AssemblyCompany ("Logic Ethos Ltd")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("stuart")]
+[assembly: AssemblyCopyright ("Stuart Johnson")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 

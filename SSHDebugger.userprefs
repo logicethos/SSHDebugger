@@ -1,18 +1,21 @@
 ﻿<Properties StartupItem="SSHDebugger/SSHDebugger.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SSHDebugger/Debugger/clsSSHDebuggerEngine.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="addin-project.xml">
     <Files>
-      <File FileName="SSHDebugger/Properties/Manifest.addin.xml" Line="1" Column="1" />
-      <File FileName="SSHDebugger/Properties/AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/Properties/Manifest.addin.xml" Line="38" Column="14" />
+      <File FileName="SSHDebugger/Properties/AssemblyInfo.cs" Line="12" Column="46" />
       <File FileName="SSHDebugger/Properties/AddinInfo.cs" Line="1" Column="1" />
-      <File FileName="SSHDebugger/ssh-host.xft.xml" Line="25" Column="44" />
+      <File FileName="SSHDebugger/ssh-host.xft.xml" Line="3" Column="34" />
       <File FileName="../../../../usr/lib/mono/4.5/Microsoft.Common.targets" Line="1" Column="1" />
       <File FileName="SSHDebugger/Debugger/clsSSHDebuggerEngine.cs" Line="49" Column="51" />
-      <File FileName="SSHDebugger/Debugger/clsSSHSoftDebuggerSession.cs" Line="4" Column="22" />
+      <File FileName="SSHDebugger/Debugger/clsSSHSoftDebuggerSession.cs" Line="1" Column="1" />
       <File FileName="SSHDebugger/Host/clsTerminal.cs" Line="1" Column="1" />
       <File FileName="SSHDebugger/Host/clsHost.cs" Line="29" Column="22" />
       <File FileName="SSHDebugger/Host/clsSSHTerminal.cs" Line="1" Column="1" />
       <File FileName="SSHDebugger/Debugger/clsDebuggerOptionsDialog.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/packages.config" Line="1" Column="1" />
+      <File FileName="README.md" Line="1" Column="1" />
+      <File FileName="addin-project.xml" Line="7" Column="16" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

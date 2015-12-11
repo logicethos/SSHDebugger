@@ -5,15 +5,16 @@
     <Header>
         <Name>SSH Debugger</Name>
         <Name locale="en-GB">Remote SSH Debugger</Name>
-        <Description>Remotely execute, and debug via ssh</Description>
-        <Author>Stuart Johnson</Author>
+        <Description>Remotely execute, and debug your projects via WiFi/Ethernet. Usefull for embedded deveices, and remote servers.</Description>
+        <Author>Stuart Johnson, Logic Ethos Ltd</Author>
         <Url>https://github.com/logicethos/SSHDebugger</Url>
+		<UpdateRank>MySpecialTag:Normal</UpdateRank>
+		<PreviewImage>SSHDebugger.png</PreviewImage>
     </Header>
 </Addin>
 
 
 <ExtensionModel>
-
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
 			id="SSHDebugger"
@@ -35,6 +36,4 @@
 	<Extension path="/MonoDevelop/Ide/CustomTools">
 		<Tool name="CustomTools" type="CustomTools" />
 	</Extension>
-
-
 </ExtensionModel>
