@@ -1,39 +1,36 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-
-
-<Addin id="MonoDevelop.SSHDebugger">
-    <Header>
-        <Name>SSH Debugger</Name>
-        <Name locale="en-GB">Remote SSH Debugger</Name>
-        <Description>Remotely execute, and debug your projects via WiFi/Ethernet. Usefull for embedded deveices, and remote servers.</Description>
-        <Author>Stuart Johnson, Logic Ethos Ltd</Author>
-        <Url>https://github.com/logicethos/SSHDebugger</Url>
+<Addin id="SSHDebugger"
+	namespace="SSHDebugger"
+	version="0.1">
+	<Header>
+		<Name>SSH Debugger</Name>
+		<Category>Debugging</Category>
+		<Name locale="en-GB">Remote SSH Debugger</Name>
+		<Description>Remotely execute, and debug your projects via WiFi/Ethernet. Usefull for embedded deveices, and remote servers.</Description>
+		<Author>Stuart Johnson, Logic Ethos Ltd</Author>
+		<Url>https://github.com/logicethos/SSHDebugger</Url>
 		<UpdateRank>MySpecialTag:Normal</UpdateRank>
 		<PreviewImage>SSHDebugger.png</PreviewImage>
-    </Header>
+	</Header>
+	<Runtime>
+		<Import assembly="Renci.SshNet.dll" />
+		<Import assembly="vte-sharp.dll" />
+		<Import file="SSHDebugger.png" />
+	</Runtime>
+	<ExtensionModel>
+		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+			<DebuggerEngine id="SSHDebugger"
+				name="SSH Debugger"
+				features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching"
+				type="SSHDebugger.clsSSHDebuggerEngine" />
+		</Extension>
+		<Extension path="/MonoDevelop/Ide/FileTemplates">
+			<FileTemplate id="sshhosttemplate"
+				file="ssh-host.xft.xml" />
+		</Extension>
+		<Extension path="/MonoDevelop/Ide/CustomTools">
+			<Tool name="CustomTools"
+				type="CustomTools" />
+		</Extension>
+	</ExtensionModel>
 </Addin>
-
-
-<ExtensionModel>
-	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
-		<DebuggerEngine
-			id="SSHDebugger"
-			name="SSH Debugger"
-			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching"
-			type="SSHDebugger.clsSSHDebuggerEngine" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="SSHDebugger.clsStartup" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate
-			id = "sshhosttemplate"
-			file="ssh-host.xft.xml"/>
-	</Extension>
-
-	<Extension path="/MonoDevelop/Ide/CustomTools">
-		<Tool name="CustomTools" type="CustomTools" />
-	</Extension>
-</ExtensionModel>
