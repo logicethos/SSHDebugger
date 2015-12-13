@@ -38,10 +38,9 @@ using System.Threading.Tasks;
 
 namespace SSHDebugger
 {
-	public class clsSSHTerminal : clsTerminal, IDisposable
+	public class clsSSHTerminal : IDisposable
 	{
 		List<PrivateKeyFile> PrivateKeyFileList = new List<PrivateKeyFile>();
-
 
 		clsHost Host;
 
@@ -55,30 +54,25 @@ namespace SSHDebugger
 		
 		ManualResetEvent keepShellAlive = new ManualResetEvent(false);
 
+		public delegate void TerminalDataHandler(String text);
+		public event TerminalDataHandler TerminalData;
+
+		public Gdk.Key LastKeyPress { get; private set;}
+
+		public bool UserInputMode {get; private set;}
+		AutoResetEvent userkeypress = new AutoResetEvent (false);
+
+
 		const int retryCount = 3;
 
-		public clsSSHTerminal(clsHost host) : base (host.Name, host.TerminalCols, host.TerminalRows, host.TerminalFont)
+		public clsSSHTerminal(clsHost host)
 		{
 			Host = host;
-			KeyPress += (Gdk.Key key) => 
-			{
-				if (LocalEcho) Write(key.ToString());
-				if (shellStream!=null && shellStream.CanWrite)
-					{
-						 shellStream.WriteByte((byte)key);
-						 shellStream.Flush();
-					}
-			};
 		}
 
 		public void SetHost(clsHost host)
 		{
 			Host = host;
-
-			Gtk.Application.Invoke (delegate {
-				Name = host.Name;
-				base.term.SetSize(host.TerminalCols,host.TerminalRows);
-			});
 		}
 
 		public void AddPrivateKeyFile(String path)
@@ -112,13 +106,13 @@ namespace SSHDebugger
 						sshClient = new SshClient (Host.RemoteHost, Host.RemoteSSHPort, Host.Username,Host.Password);
 					}
 
-					this.Write("ssh connecting to {0}@{1}:{2}...",Host.Username,Host.RemoteHost,Host.RemoteSSHPort);
+					Write("ssh connecting to {0}@{1}:{2}...",Host.Username,Host.RemoteHost,Host.RemoteSSHPort);
 					sshClient.Connect ();
 					if (sshClient.IsConnected)
 					{
-						this.WriteLine("OK");
+						WriteLine("OK");
 
-						this.WriteLine("MaxSessions:{0} {1} {2}",
+						WriteLine("MaxSessions:{0} {1} {2}",
 											sshClient.ConnectionInfo.MaxSessions,
 											sshClient.ConnectionInfo.Encoding,											
 											sshClient.ConnectionInfo.CurrentServerEncryption);
@@ -127,7 +121,7 @@ namespace SSHDebugger
 				}
 				catch (Exception ex)
 				{
-					this.WriteLine("ssh Error: "+ex.Message);
+					WriteLine("ssh Error: "+ex.Message);
 					return false;
 				}
 			}
@@ -143,9 +137,9 @@ namespace SSHDebugger
 			{
 				try
 				{	
-					this.WriteLine("*** Console Stream Start");
+					WriteLine("Starting terminal: Emulation = {0}",Host.TerminalEmulation);
 	
-					shellStream = sshClient.CreateShellStream("xterm",(uint)Host.TerminalCols,(uint)Host.TerminalRows,0,0,4096);
+					shellStream = sshClient.CreateShellStream(Host.TerminalEmulation,(uint)Host.TerminalCols,(uint)Host.TerminalRows,0,0,4096);
 					
 				
 					shellStream.DataReceived += (object sender, ShellDataEventArgs e) => 
@@ -161,18 +155,18 @@ namespace SSHDebugger
 
 					if (!String.IsNullOrEmpty(Host.WorkingDir))
 					{
-						this.Write("Changing dir: {0}...",Host.WorkingDir);
+						Write("Changing dir: {0}...",Host.WorkingDir);
 						shellStream.WriteLine(String.Format("cd {0}\r\n",Host.WorkingDir));
 					}
 					started.Set();
 					keepShellAlive.Reset();
 					keepShellAlive.WaitOne();
 
-					this.WriteLine("\r\n*** Console Stream End");
+					WriteLine("\r\n*** Console Stream End");
 				}
 				catch (Exception ex)
 				{
-					this.WriteLine("\r\n*** Console Stream Error: {0}",ex.Message);
+					WriteLine("\r\n*** Console Stream Error: {0}",ex.Message);
 				}
 				finally
 				{
@@ -223,11 +217,11 @@ namespace SSHDebugger
 						sftpClient = new SftpClient (Host.RemoteHost, Host.RemoteSSHPort, Host.Username, Host.Password);
 					}
 
-					this.Write("sftp connecting to {0}@{1}:{2}...",Host.Username,Host.RemoteHost,Host.RemoteSSHPort);
+					Write("sftp connecting to {0}@{1}:{2}...",Host.Username,Host.RemoteHost,Host.RemoteSSHPort);
 					sftpClient.Connect ();
 					if (sftpClient.IsConnected)
 					{
-						this.WriteLine("OK");
+						WriteLine("OK");
 									
 						if (!String.IsNullOrEmpty(Host.WorkingDir))
 						{
@@ -236,21 +230,21 @@ namespace SSHDebugger
 							{
 								try
 								{
-									this.Write("Changing dir: {0}...",scpPath);
+									Write("Changing dir: {0}...",scpPath);
 									sftpClient.ChangeDirectory (scpPath);
 								}catch(Exception ex)
 								{
-									this.WriteLine("FAILED\r\n{0}",ex.Message);
+									WriteLine("FAILED\r\n{0}",ex.Message);
 									return false;
 								}
 							}
-							this.WriteLine("OK");
+							WriteLine("OK");
 						}
 					}
 				}
 				catch (Exception ex)
 				{
-					this.WriteLine("Error: "+ex.Message);
+					WriteLine("Error: "+ex.Message);
 					return false;
 				}
 			}
@@ -263,7 +257,7 @@ namespace SSHDebugger
 			if (!ConnectSSH ())	return;
 
 			var cmd = sshClient.CreateCommand (command);
-			cmd.Execute ();
+			Write(cmd.Execute ());
 		}
 
 		public void ExecuteAsync(String command)
@@ -274,11 +268,11 @@ namespace SSHDebugger
 			cmd.BeginExecute (
 					(IAsyncResult r) => {
 						var result = (CommandAsyncResult)r;
-						this.WriteLine("{0} {1}",command,result.IsCompleted);
+						WriteLine("{0} {1}",command,result.IsCompleted);
 					}
 				);
 				ReadAsync(cmd.ExtendedOutputStream);
-				ReadAsync(cmd.OutputStream);
+			//	ReadAsync(cmd.OutputStream);
 		}
 
 
@@ -289,18 +283,17 @@ namespace SSHDebugger
 				int numBytesRead;
 				byte[] data = new byte[1024];
 
-				this.WriteLine("*** Console Stream Start");
+				WriteLine("stream start");
 				try
 				{
 					while ((numBytesRead = await stream.ReadAsync(data, 0, 1024)) >0)
 					{
-						this.Write(	Encoding.UTF8.GetString(data,0,numBytesRead));		
+						Write(Encoding.UTF8.GetString(data,0,numBytesRead));		
 					}
-					this.WriteLine("\r\n*** Console Stream End");
 				}
 				catch (Exception ex)
 				{
-					this.WriteLine("\r\n*** Console Stream Error: {0}",ex.Message);
+					WriteLine("\r\nstream error: {0}",ex.Message);
 				}
 				
 			}).Start();
@@ -317,12 +310,12 @@ namespace SSHDebugger
 
 			if (LocalNetwork == null) LocalNetwork = IPAddress.Loopback.ToString ();
 
-			this.Write ("ssh tunnel: {0}:{1} -> {2}:{3}...",LocalNetwork, TunnelPortLocal, "localhost", TunnelPortRemote);
+			Write ("ssh tunnel: {0}:{1} -> {2}:{3}...",LocalNetwork, TunnelPortLocal, "localhost", TunnelPortRemote);
 			if (forwardPort!=null)
 			{
 				if (forwardPort.BoundPort == TunnelPortLocal && forwardPort.Port == TunnelPortRemote) {
 					if (forwardPort.IsStarted) {
-						this.WriteLine ("Tunnel already connencted");
+						WriteLine ("Tunnel already connencted");
 						return true;
 					} else {
 						forwardPort.Dispose ();
@@ -340,11 +333,11 @@ namespace SSHDebugger
 
 			forwardPort.RequestReceived += (object sender, PortForwardEventArgs e) => 
 			{
-				this.WriteLine("Tunnel connection: {0}->{1}",e.OriginatorHost, e.OriginatorPort);
+				WriteLine("Tunnel connection: {0}->{1}",e.OriginatorHost, e.OriginatorPort);
 			};
 
 			forwardPort.Start();
-			this.WriteLine ("OK");
+			WriteLine ("OK");
 
 			return forwardPort.IsStarted;
 
@@ -353,16 +346,16 @@ namespace SSHDebugger
 			{
 				if (ex.SocketErrorCode == SocketError.AccessDenied)
 				{
-					this.WriteLine("FAILED\r\nAccess Denied - Cannot create port redirect. Try running monodevelop with higher privileges.");
+					WriteLine("FAILED\r\nAccess Denied - Cannot create port redirect. Try running monodevelop with higher privileges.");
 				}
 				else
 				{
-					this.WriteLine("FAILED\r\nTunnel Error: {0}",ex);
+					WriteLine("FAILED\r\nTunnel Error: {0}",ex);
 				}
 			}
 			catch (Exception ex)
 			{
-				this.WriteLine("Tunnel Error: {0}",ex);
+				WriteLine("Tunnel Error: {0}",ex);
 			}
 			return false;
 		}
@@ -375,7 +368,7 @@ namespace SSHDebugger
 
 			if (String.IsNullOrEmpty (RemoteFileName)) RemoteFileName = System.IO.Path.GetFileName(LocalPath);
 
-			this.Write("sftp Uploading: {0}...",LocalPath);
+			Write("sftp Uploading: {0}...",LocalPath);
 
 			try
 			{	
@@ -384,7 +377,7 @@ namespace SSHDebugger
 					sftpClient.UploadFile (fs, RemoteFileName,true, (bytes) => {Write(".");});
 	
 				}
-				this.WriteLine("OK");
+				WriteLine("OK");
 				return true;
 			} catch (Exception ex)
 			{
@@ -392,13 +385,76 @@ namespace SSHDebugger
 			}
 		}
 
-		public override void Dispose()
+		public void WriteLine(String output, params object[] args)
 		{
+			WriteLine (String.Format(output, args));
+		}
+
+		public void WriteLine(String output)
+		{
+				Write (output+"\r\n");
+		}
+
+		public void Write(String output, params object[] args)
+		{
+			Write (String.Format(output, args));
+		}
+
+		public void Write(String output)
+		{
+			if (TerminalData!=null) TerminalData(output);
+
+		}
+
+		public void ShellSend(Gdk.Key key)
+		{
+			if (UserInputMode)
+			{
+				LastKeyPress = key;
+				userkeypress.Set ();
+			}
+		    else
+			{
+				if (LocalEcho) Write(key.ToString());
+				if (shellStream!=null && shellStream.CanWrite)
+				{
+				 	shellStream.WriteByte((byte)key);
+				 	shellStream.Flush();
+				}
+			}
+		}
+
+		public String RequestUserInput(String prompt, String echo=null)
+		{
+			UserInputMode = true;
+			Write (prompt);
+			String input = "";
+			while (userkeypress.WaitOne ())
+			{				
+				if (LastKeyPress == Gdk.Key.BackSpace) {
+					if (input.Length > 0) {
+						input = input.Substring (0, input.Length - 1);
+						if (echo != "") Write ("\b \b");
+					}
+				} else if (LastKeyPress == Gdk.Key.Return) {
+					Write ("\r\n");
+					break;
+				} else {
+					Write (echo ?? LastKeyPress.ToString());
+					input += LastKeyPress;
+				}
+			}
+			UserInputMode = false;
+			return input;
+		}
+
+		public void Dispose()
+		{
+			userkeypress.Dispose();
 			keepShellAlive.Set();
 			if (shellStream!=null) shellStream.Dispose ();
 			if (sshClient!=null) sshClient.Dispose ();
 			if (sftpClient!=null) sftpClient.Dispose ();
-			base.Dispose();
 		}
 
 	}

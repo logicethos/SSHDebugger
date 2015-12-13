@@ -50,7 +50,7 @@ namespace SSHDebugger
 	{
 		clsSSHSoftDebuggerSession DebuggerSession = null;
 		public static List<clsHost> HostsList = new List<clsHost>();
-		public static clsSSHTerminal sshTerminal = null;
+	
 		clsHost selectedHost = null;
 		ManualResetEvent termWait = new ManualResetEvent (false);
 
@@ -85,16 +85,19 @@ namespace SSHDebugger
 	
 				if (selectedHost != null) {
 
-					if (sshTerminal == null || !sshTerminal.IsActive)
+					if (selectedHost.Terminal == null)
 					{
 						Gtk.Application.Invoke (delegate {
-							sshTerminal = new clsSSHTerminal (selectedHost);
-							sshTerminal.Show();
+						#if VTE
+							selectedHost.Terminal = new windowTerminalVTE(selectedHost);
+						#else
+							selectedHost.Terminal = new windowTerminalGTK(selectedHost);
+						#endif
 							while (GLib.MainContext.Iteration ());
 							termWait.Set();
 						});
 	
-						if (!termWait.WaitOne(1000) || sshTerminal==null)
+						if (!termWait.WaitOne(1000) || selectedHost.Terminal==null)
 						{
 							Gtk.Application.Invoke (delegate
 								{
@@ -107,29 +110,18 @@ namespace SSHDebugger
 							return null;
 						}
 	
-						sshTerminal.DeleteEvent += (o, args) => 
-						{
-							DebuggerSession.Exit();
-						};
+//						sshTerminal.DeleteEvent += (o, args) => 
+//						{
+//							DebuggerSession.Exit();
+//						};
 					}
-					else
-					{
-						sshTerminal.SetHost(selectedHost);
-					}
-					dsi = selectedHost.ProcessScript(true,sshTerminal);
+					dsi = selectedHost.ProcessScript(true);
 				
 				}
 
-				if (dsi != null)
-				{
-					sshTerminal.WriteLine("Starting debugger");
-					return dsi;
-				}
-				else
-				{
-					sshTerminal.RequestUserInput("Error - press return to quit");
-					return null;
-				}
+				if (dsi != null) selectedHost.Terminal.SSH.WriteLine("Starting debugger");
+					
+				return dsi;
 			}
 			catch (Exception ex)
 			{

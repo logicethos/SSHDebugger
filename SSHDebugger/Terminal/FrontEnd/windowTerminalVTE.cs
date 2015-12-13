@@ -1,5 +1,5 @@
 ﻿// 
-// clsHost.cs
+// windowTerminalVTE.cs
 //  
 // Author:
 //		 Stuart Johnson <stuart@logicethos.com>
@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if VTE
+
 using System;
 using Gtk;
 using Vte;
@@ -32,20 +34,21 @@ using System.Threading;
 
 namespace SSHDebugger
 {
-	public class clsTerminal :  Window 
+	public class windowTerminalVTE :  Window, ITerminal
 	{
 		public Vte.Terminal term; 
 
-		public delegate void KeyPressHandler(Gdk.Key key);
-		public event KeyPressHandler KeyPress;
+		public clsSSHTerminal SSH {get; private set;}
 
-		public Gdk.Key LastKeyPress { get; private set;}
-		public bool UserInputMode {get; private set;}
+		clsHost	Host;
 
-		AutoResetEvent userkeypress = new AutoResetEvent (false);
 
-		public clsTerminal(String Name, int Columns, int Rows, String FontString) : base(Name)
+		public windowTerminalVTE(clsHost host) : base(host.Name)
 		{
+
+			SSH = new clsSSHTerminal(host);
+
+			Host = host;
 			HBox hbox = new HBox ();
 			term = new Terminal ();
 			term.CursorBlinks = true;
@@ -53,103 +56,51 @@ namespace SSHDebugger
 			term.ScrollOnKeystroke = true;
 			term.DeleteBinding = TerminalEraseBinding.Auto;
 			term.BackspaceBinding = TerminalEraseBinding.Auto;			
-			term.FontFromString = FontString;
+			term.FontFromString = host.TerminalFont;
 			term.Emulation = "xterm";
 			term.Encoding = "UTF-8";
 
-			term.SetSize(Columns,Rows);
+			term.SetSize(host.TerminalCols,host.TerminalRows);
 
 			VScrollbar vscroll = new VScrollbar (term.Adjustment);
 			hbox.PackStart (term);
 			hbox.PackStart (vscroll);
 
-//			Gdk.Color white = new Gdk.Color ();
-//			Gdk.Color.Parse ("white", ref white);
-//
-//			Gdk.Color black = new Gdk.Color ();
-//			Gdk.Color.Parse ("black", ref black);
-//			term.SetColors (black, white, new Gdk.Color[]{}, 16);
-
-
-			term.ButtonPressEvent += (o, args) => 
-			{
-				Write(args.Event.Button.ToString());
-			};
-
 			this.CanFocus = true;
 
-			term.Show ();
-			hbox.Show ();
-			vscroll.Show ();
 			this.Add (hbox);
 			ShowAll ();
+
+			SSH.TerminalData += (string text) => 
+			{
+				Gtk.Application.Invoke (delegate {
+					term.Feed(text);
+				});
+			};
+
 
 		}
 
 
 		[GLib.ConnectBefore]
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt) {
-			LastKeyPress = evnt.Key;
-			userkeypress.Set ();
-			if (!UserInputMode && KeyPress!=null) KeyPress.Invoke(evnt.Key);
+			SSH.ShellSend(evnt.Key);
 			return base.OnKeyPressEvent (evnt);
  		}
 
-
 		public String RequestUserInput(String prompt, String echo=null)
 		{
-			UserInputMode = true;
-			Write (prompt);
-			String input = "";
-			while (userkeypress.WaitOne ())
-			{				
-				if (LastKeyPress == Gdk.Key.BackSpace) {
-					if (input.Length > 0) {
-						input = input.Substring (0, input.Length - 1);
-						if (echo != "") Write ("\b \b");
-					}
-				} else if (LastKeyPress == Gdk.Key.Return) {
-					Write ("\r\n");
-					break;
-				} else {
-					Write (echo ?? LastKeyPress.ToString());
-					input += LastKeyPress;
-				}
-			}
-			UserInputMode = false;
-			return input;
-
+			return SSH.RequestUserInput(prompt,echo);
 		}
-
-
-		public void WriteLine(String output, params object[] args)
-		{
-			WriteLine (String.Format(output, args));
-		}
-
-		public void WriteLine(String output)
-		{
-				Write (output+"\r\n");
-		}
-
-		public void Write(String output, params object[] args)
-		{
-			Write (String.Format(output, args));
-		}
-
-		public void Write(String output)
-		{
-			Gtk.Application.Invoke (delegate {
-				term.Feed (output);
-			});
-
-		}
+		
 
 		public override void Dispose()
 		{
-			userkeypress.Dispose();
+			term.Dispose();
+			SSH.Dispose();
 			base.Dispose();
 		}
 
 	}
 }
+#endif

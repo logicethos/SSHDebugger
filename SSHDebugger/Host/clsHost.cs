@@ -40,8 +40,10 @@ using System.Diagnostics;
 
 namespace SSHDebugger
 {
-	public class clsHost
+	public class clsHost : IDisposable
 	{
+
+		public ITerminal Terminal = null;
 
 		public String LocalHost { get; private set;}
 		public UInt32 LocalTunnelPort { get; private set;}
@@ -60,11 +62,11 @@ namespace SSHDebugger
 
 		public String buildpath { get; private set;}
 
+		public String TerminalEmulation { get; private set;}
 		public String TerminalFont { get; private set;}
 		public int TerminalRows { get; private set;}
 		public int TerminalCols { get; private set;}
 
-		clsSSHTerminal terminal = null;
 
 		String _hostString;
 		public String HostString
@@ -110,18 +112,18 @@ namespace SSHDebugger
 			TerminalFont = "Monospace 10";
 			TerminalCols = 120;
 			TerminalRows = 50;
+			TerminalEmulation = "vt100";
 
-			ProcessScript (false,null);
+			ProcessScript (false);
 			clsSSHDebuggerEngine.HostsList.Add (this);
 		}
 
 
-		public SoftDebuggerStartInfo ProcessScript(bool Execute, clsSSHTerminal terminal)
+		public SoftDebuggerStartInfo ProcessScript(bool Execute)
 		{
 
-			this.terminal = terminal;
 				
-			if (terminal != null) terminal.WriteLine("Running script: {0}",Path.GetFileName(ScriptPath));
+			if (Terminal != null) Terminal.SSH.WriteLine("Running script: {0}",Path.GetFileName(ScriptPath));
 			int ConsolePort = -1;
 			int LineCount = 0;
 
@@ -144,12 +146,11 @@ namespace SSHDebugger
 								Process.Start(startInfo);
 							}							
 						} else if (linein.StartsWith (">")) {
-							if (Execute) terminal.Execute(linein.Substring(1));
+							if (Execute) Terminal.SSH.Execute(linein.Substring(1));
 						} else if (linein.StartsWith ("&>")) {
-							if (Execute) terminal.ExecuteAsync(linein.Substring(2));
-
+							if (Execute) Terminal.SSH.ExecuteAsync(linein.Substring(2));
 						} else if (linein.StartsWith ("s>") || linein.StartsWith ("S>")) {
-							if (Execute) terminal.ShellExecute(linein.Substring(2));
+							if (Execute) Terminal.SSH.ShellExecute(linein.Substring(2));
 						} else {
 							var commandLine = linein.Split (new char[]{ ' ', '=' }, 2);
 							var command = commandLine [0].Trim ();
@@ -192,8 +193,11 @@ namespace SSHDebugger
 								case "terminalcols":
 									TerminalCols = int.Parse(commandArgs);
 									break;
+								case "terminalemulation":
+									TerminalEmulation = commandArgs;
+									break;
 								case "privatekeyfile":
-									terminal.AddPrivateKeyFile(commandArgs);								
+									if (!String.IsNullOrEmpty(commandArgs)) Terminal.SSH.AddPrivateKeyFile(commandArgs);								
 									break;
 								default:
 								{
@@ -204,17 +208,17 @@ namespace SSHDebugger
 											case "scp-copy": // $exe-file $mdb-file
 												foreach (var file in commandArgs.Split(new char[]{' '}))
 												{
-													if (!terminal.UploadFile(file)) return null;
+													if (!Terminal.SSH.UploadFile(file)) return null;
 												}
 												break;
 											case "starttunnel": 
-												if (!terminal.StartTunnel(LocalTunnelPort,RemoteTunnelPort)) return null;
+												if (!Terminal.SSH.StartTunnel(LocalTunnelPort,RemoteTunnelPort)) return null;
 												break;
 											case "sleep":
 												Thread.Sleep(int.Parse(commandArgs)*1000);
 												break;
 											default:
-											if (terminal != null) terminal.WriteLine ("Script Error (Line {0}): {1} Unkown command", LineCount, linein);
+											if (Terminal != null) Terminal.SSH.WriteLine ("Script Error (Line {0}): {1} Unkown command", LineCount, linein);
 												break;
 										}
 									}
@@ -226,8 +230,8 @@ namespace SSHDebugger
 				}
 				if (Execute) return DebuggerInfo(ConsolePort);
 			} catch (Exception ex) {
-				if (terminal != null) {
-					terminal.WriteLine ("Script Error (Line {0}): {1}", LineCount, ex.Message);
+				if (Terminal != null) {
+					Terminal.SSH.WriteLine ("Script Error (Line {0}): {1}", LineCount, ex.Message);
 				} else {
 					Gtk.Application.Invoke (delegate {
 						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, String.Format("Line {0}:{1}",LineCount, ex.Message))) {
@@ -300,7 +304,7 @@ namespace SSHDebugger
 						Arguments = ""
 				};
 
-				if (terminal != null) terminal.WriteLine ("Configuring debugger {0}:{1}",addresslist[0], (int)LocalTunnelPort);
+				if (Terminal != null) Terminal.SSH.WriteLine ("Configuring debugger {0}:{1}",addresslist[0], (int)LocalTunnelPort);
 
 				return dsi;
 
@@ -308,8 +312,8 @@ namespace SSHDebugger
 			catch (Exception ex)
 			{
 
-				if (terminal != null) {
-					terminal.WriteLine ("SoftDebuggerStartInfo Error {0}", ex.Message);
+				if (Terminal != null) {
+					Terminal.SSH.WriteLine ("SoftDebuggerStartInfo Error {0}", ex.Message);
 				} else {
 					Gtk.Application.Invoke (delegate {
 						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, String.Format("SoftDebuggerStartInfo Error {0}", ex.Message))) {
@@ -321,6 +325,11 @@ namespace SSHDebugger
 				}
 				return null;
 			}
+		}
+
+		public void Dispose()
+		{	
+			if (Terminal!=null) Terminal.Dispose();
 		}
 			
 	}

@@ -32,8 +32,9 @@ WorkingDir = ~
 PrivateKeyFile =
 
 TerminalFont Monospace 10
-TerminalRows 30;
-TerminalCols 120;
+TerminalRows 30
+TerminalCols 120
+TerminalEmulation xterm
 
 LocalTunnelPort 8000
 RemoteTunnelPort 12345
@@ -44,7 +45,7 @@ scp-copy $[exe-path] $[mdb-path]
 StartTunnel
 
 #Start remote application, with debug listener.
-&>mono --debug --debugger-agent=transport=dt_socket,address=localhost:$[RemoteTunnelPort],server=y,suspend=y $[exe-file]
+s>mono --debug --debugger-agent=transport=dt_socket,address=localhost:$[RemoteTunnelPort],server=y,suspend=y $[exe-file]
 
 ]]>
         </File>
