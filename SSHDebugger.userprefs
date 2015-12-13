@@ -1,23 +1,23 @@
 ﻿<Properties StartupItem="SSHDebugger/SSHDebugger.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="addin-project.xml">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SSHDebugger/Properties/Manifest.addin.xml">
     <Files>
-      <File FileName="SSHDebugger/Properties/Manifest.addin.xml" Line="38" Column="14" />
+      <File FileName="SSHDebugger/Properties/Manifest.addin.xml" Line="36" Column="9" />
       <File FileName="SSHDebugger/Properties/AssemblyInfo.cs" Line="12" Column="46" />
-      <File FileName="SSHDebugger/Properties/AddinInfo.cs" Line="22" Column="60" />
-      <File FileName="SSHDebugger/ssh-host.xft.xml" Line="37" Column="24" />
+      <File FileName="SSHDebugger/Properties/AddinInfo.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/ssh-host.xft.xml" Line="1" Column="1" />
       <File FileName="../../../../usr/lib/mono/4.5/Microsoft.Common.targets" Line="1" Column="1" />
-      <File FileName="SSHDebugger/Debugger/clsSSHDebuggerEngine.cs" Line="126" Column="24" />
+      <File FileName="SSHDebugger/Debugger/clsSSHDebuggerEngine.cs" Line="1" Column="1" />
       <File FileName="SSHDebugger/Debugger/clsSSHSoftDebuggerSession.cs" Line="1" Column="1" />
-      <File FileName="SSHDebugger/Host/clsHost.cs" Line="149" Column="37" />
+      <File FileName="SSHDebugger/Host/clsHost.cs" Line="1" Column="1" />
       <File FileName="SSHDebugger/Debugger/clsDebuggerOptionsDialog.cs" Line="1" Column="1" />
       <File FileName="SSHDebugger/packages.config" Line="1" Column="1" />
       <File FileName="README.md" Line="1" Column="1" />
-      <File FileName="addin-project.xml" Line="12" Column="16" />
-      <File FileName="SSHDebugger/Terminal/FrontEnd/windowTerminalVTE.cs" Line="83" Column="1" />
-      <File FileName="SSHDebugger/Terminal/FrontEnd/windowTerminalGTK.cs" Line="87" Column="1" />
-      <File FileName="SSHDebugger/Terminal/ITerminal.cs" Line="8" Column="1" />
-      <File FileName="SSHDebugger/Terminal/clsSSHTerminal.cs" Line="427" Column="17" />
+      <File FileName="addin-project.xml" Line="4" Column="1" />
+      <File FileName="SSHDebugger/Terminal/FrontEnd/windowTerminalVTE.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/Terminal/FrontEnd/windowTerminalGTK.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/Terminal/ITerminal.cs" Line="1" Column="1" />
+      <File FileName="SSHDebugger/Terminal/clsSSHTerminal.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
