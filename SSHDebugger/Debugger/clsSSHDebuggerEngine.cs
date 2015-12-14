@@ -61,10 +61,12 @@ namespace SSHDebugger
 
 		public void BuildList()
 		{
-			HostsList.Clear ();
 			foreach (var file in IdeApp.ProjectOperations.CurrentSelectedProject.Files.Where(x => x.Name.EndsWith(".ssh.txt")))
 			{
-				new clsHost(file.FilePath);
+				if (!HostsList.Exists(x=>x.ScriptPath == file.FilePath))
+				{
+					new clsHost(file.FilePath);
+				}
 			}
 		}
 

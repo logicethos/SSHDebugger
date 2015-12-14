@@ -3,10 +3,11 @@
 	namespace="SSHDebugger"
 	version="0.1">
 	<Header>
-		<Name>SSH Debugger</Name>
+		<Name>SSH Debugger (VTE Xterm version)</Name>
 		<Category>Debugging</Category>
-		<Name locale="en-GB">Remote SSH Debugger</Name>
-		<Description>Remotely execute, and debug your projects via WiFi/Ethernet. Usefull for embedded deveices, and remote servers.</Description>
+		<Name locale="en-GB">SSH Debugger</Name>
+		<Description>Remotely execute, and debug your projects via WiFi/Ethernet. Useful for embedded devices, and remote servers.
+Monodevelop Linux users, with Gnomes VTE libs installed, get a full Xterm console.</Description>
 		<Author>Stuart Johnson, Logic Ethos Ltd</Author>
 		<Url>https://github.com/logicethos/SSHDebugger</Url>
 		<UpdateRank>MySpecialTag:Normal</UpdateRank>
