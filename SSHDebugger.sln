@@ -13,18 +13,18 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-		Debug VTE|Any CPU = Debug VTE|Any CPU
-		Release VTE|Any CPU = Release VTE|Any CPU
+		Debug-VTE|Any CPU = Debug-VTE|Any CPU
+		Release-VTE|Any CPU = Release-VTE|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Debug VTE|Any CPU.ActiveCfg = Debug VTE|Any CPU
-		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Debug VTE|Any CPU.Build.0 = Debug VTE|Any CPU
 		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Release VTE|Any CPU.ActiveCfg = Release VTE|Any CPU
-		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Release VTE|Any CPU.Build.0 = Release VTE|Any CPU
+		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Debug-VTE|Any CPU.ActiveCfg = Debug-VTE|Any CPU
+		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Debug-VTE|Any CPU.Build.0 = Debug-VTE|Any CPU
 		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Release-VTE|Any CPU.ActiveCfg = Release-VTE|Any CPU
+		{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}.Release-VTE|Any CPU.Build.0 = Release-VTE|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
