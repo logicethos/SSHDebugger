@@ -8,7 +8,7 @@
 		<Icon>md-text-file-icon</Icon>
 		<_Category>SSH-Debug</_Category>
 		<_Description>SSH Host script</_Description>
-		<DefaultFilename>rermote-host.ssh.txt</DefaultFilename>
+		<DefaultFilename>remote-host.ssh.txt</DefaultFilename>
 	</TemplateConfiguration>
 
 	
