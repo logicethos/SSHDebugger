@@ -14,11 +14,11 @@ Monodevelop Linux users, with Gnomes VTE libs installed, get a full Xterm consol
 		<PreviewImage>SSHDebugger.png</PreviewImage>
 	</Header>
 
-<!--	<Runtime>
+	<Runtime>
 		<Import assembly="Renci.SshNet.dll" />
-		<Import assembly="vte-sharp.dll" />
+<!--		<Import assembly="vte-sharp.dll" />  SEE AssemblyInfo.cs-->
 		<Import file="SSHDebugger.png" />
-	</Runtime>-->
+	</Runtime>
 
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine id="SSHDebugger"
@@ -30,8 +30,5 @@ Monodevelop Linux users, with Gnomes VTE libs installed, get a full Xterm consol
 		<FileTemplate id="sshhosttemplate"
 			file="ssh-host.xft.xml" />
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/CustomTools">
-		<Tool name="CustomTools"
-			type="CustomTools" />
-	</Extension>
+
 </Addin>
