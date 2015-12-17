@@ -73,8 +73,6 @@ namespace SSHDebugger
 					textview1.ScrollToIter(textview1.Buffer.EndIter, 0, false, 0, 0);
 				});
 			};
-
-
 		}
 
 
@@ -84,7 +82,20 @@ namespace SSHDebugger
 			return base.OnKeyPressEvent (evnt);
  		}
 
-		
+
+		public void Front()
+		{
+			Gtk.Application.Invoke (delegate {
+				base.Present();
+				textview1.CanFocus = true;
+			});
+		}
+
+		protected override void OnDestroyed ()
+		{
+			Host.Terminal = null;
+			base.OnDestroyed ();
+		}
 
 		public override void Dispose()
 		{

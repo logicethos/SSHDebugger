@@ -6,6 +6,7 @@ namespace SSHDebugger
 	{
 		clsSSHTerminal SSH {get;}
 		void Dispose();
+		void Front();
 
 	}
 }

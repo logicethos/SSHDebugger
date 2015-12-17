@@ -346,7 +346,7 @@ namespace SSHDebugger
 			{
 				if (ex.SocketErrorCode == SocketError.AccessDenied)
 				{
-					WriteLine("FAILED\r\nAccess Denied - Cannot create port redirect. Try running monodevelop with higher privileges.");
+					WriteLine("FAILED\r\nAccess Denied - Cannot create port redirect. Try running Monodevelop with higher privileges.");
 				}
 				else
 				{

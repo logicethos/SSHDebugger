@@ -78,7 +78,6 @@ namespace SSHDebugger
 				});
 			};
 
-
 		}
 
 
@@ -92,7 +91,20 @@ namespace SSHDebugger
 		{
 			return SSH.RequestUserInput(prompt,echo);
 		}
-		
+
+		protected override void OnDestroyed ()
+		{
+			Host.Terminal = null;
+			base.OnDestroyed ();
+		}
+
+		public void Front()
+		{
+			Gtk.Application.Invoke (delegate {
+				base.Present();
+				term.CanFocus = true;
+			});
+		}
 
 		public override void Dispose()
 		{

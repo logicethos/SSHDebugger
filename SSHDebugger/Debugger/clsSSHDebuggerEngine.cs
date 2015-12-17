@@ -52,7 +52,7 @@ namespace SSHDebugger
 		public static List<clsHost> HostsList = new List<clsHost>();
 	
 		clsHost selectedHost = null;
-		ManualResetEvent termWait = new ManualResetEvent (false);
+		AutoResetEvent termWait = new AutoResetEvent (false);
 
 		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{			
@@ -81,9 +81,13 @@ namespace SSHDebugger
 
 			SoftDebuggerStartInfo dsi = null;
 			try{
-	
-				BuildList ();
-				selectedHost = InvokeSynch<clsHost> (GetDebuggerInfo);
+
+				//If no host is selected, or ther terminal window is closed
+				if (selectedHost==null || selectedHost.Terminal==null)
+				{
+					BuildList (); //Load any new templates
+					selectedHost = InvokeSynch<clsHost> (GetDebuggerInfo);  //Query user for selected host
+				}
 	
 				if (selectedHost != null) {
 
@@ -103,7 +107,7 @@ namespace SSHDebugger
 						{
 							Gtk.Application.Invoke (delegate
 								{
-									using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start VTE terminal"))
+									using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start terminal"))
 									{
 										md.Run ();
 										md.Destroy();
@@ -111,11 +115,10 @@ namespace SSHDebugger
 								});
 							return null;
 						}
-	
-//						sshTerminal.DeleteEvent += (o, args) => 
-//						{
-//							DebuggerSession.Exit();
-//						};
+					}
+					else
+					{
+						selectedHost.Terminal.Front();
 					}
 					dsi = selectedHost.ProcessScript(true);
 				
