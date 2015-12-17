@@ -132,11 +132,18 @@ namespace SSHDebugger
 
 		public SoftDebuggerStartInfo ProcessScript(bool Execute)
 		{			
-			if (Terminal != null) Terminal.SSH.WriteLine("Running script: {0}",Path.GetFileName(ScriptPath));
+			
 			int ConsolePort = -1;
 			int LineCount = 0;
 
 			try {
+
+				if (Terminal != null)
+				{
+				 	Terminal.SSH.WriteLine("Running script: {0}",Path.GetFileName(ScriptPath));
+				 	Terminal.DebuggerThread = Thread.CurrentThread;
+				}
+
 				using (var fs = File.OpenText (ScriptPath)) {
 					String linein;
 					while ((linein = fs.ReadLine ()) != null) {
@@ -241,11 +248,12 @@ namespace SSHDebugger
 				}
 				if (Execute) return DebuggerInfo(ConsolePort);
 			} catch (Exception ex) {
+				String errorMsg = "SSH Script ended (Line {0}:{1})";
 				if (Terminal != null) {
-					Terminal.SSH.WriteLine ("Script Error (Line {0}): {1}", LineCount, ex.Message);
+					Terminal.SSH.WriteLine (errorMsg, LineCount, ex.Message);
 				} else {
 					Gtk.Application.Invoke (delegate {
-						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, String.Format("Line {0}:{1}",LineCount, ex.Message))) {
+						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok,errorMsg ,LineCount, ex.Message)) {
 							md.Title = "ProcessScript";
 							md.Run ();
 							md.Destroy ();

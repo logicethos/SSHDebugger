@@ -43,6 +43,8 @@ namespace SSHDebugger
 
 		clsHost	Host;
 
+		public Thread DebuggerThread {get; set;}
+
 
 		public windowTerminalGTK(clsHost host) : base(host.Name)
 		{
@@ -99,11 +101,13 @@ namespace SSHDebugger
 		protected override void OnDestroyed ()
 		{
 			Host.Terminal = null;
+			if (DebuggerThread!=null && DebuggerThread.IsAlive) DebuggerThread.Abort();
 			base.OnDestroyed ();
 		}
 
 		public override void Dispose()
 		{
+			
 			textview1.Dispose();
 			SSH.Dispose();
 			base.Dispose();

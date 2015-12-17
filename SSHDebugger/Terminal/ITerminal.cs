@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace SSHDebugger
 {
@@ -7,6 +8,7 @@ namespace SSHDebugger
 		clsSSHTerminal SSH {get;}
 		void Dispose();
 		void Front();
+		Thread DebuggerThread {set;}
 
 	}
 }

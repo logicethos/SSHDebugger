@@ -27,5 +27,5 @@ using Mono.Addins;
 //[assembly: AssemblyKeyFile("")]
 
 #if VTE
-[assembly: ImportAddinAssembly("vte-sharp.dll")]
+//[assembly: ImportAddinAssembly("vte-sharp.dll")]  seems to be a problem loading this.
 #endif

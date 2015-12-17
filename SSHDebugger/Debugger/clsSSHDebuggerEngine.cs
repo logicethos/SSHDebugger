@@ -128,11 +128,15 @@ namespace SSHDebugger
 					
 				return dsi;
 			}
+			catch (ThreadAbortException)  //User closed terminal (probably)
+			{
+				return null;
+			}
 			catch (Exception ex)
 			{
 				Gtk.Application.Invoke (delegate
 					{
-						using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start VTE terminal"))
+						using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Terminal error "+ex.Message))
 						{
 							md.Run ();
 							md.Destroy();

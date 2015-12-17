@@ -41,6 +41,7 @@ namespace SSHDebugger
 		public clsSSHTerminal SSH {get; private set;}
 
 		clsHost	Host;
+		public Thread DebuggerThread {get; set;}
 
 
 		public windowTerminalVTE(clsHost host) : base(host.Name)
@@ -87,14 +88,11 @@ namespace SSHDebugger
 			return base.OnKeyPressEvent (evnt);
  		}
 
-		public String RequestUserInput(String prompt, String echo=null)
-		{
-			return SSH.RequestUserInput(prompt,echo);
-		}
 
 		protected override void OnDestroyed ()
 		{
 			Host.Terminal = null;
+			if (DebuggerThread!=null && DebuggerThread.IsAlive) DebuggerThread.Abort();
 			base.OnDestroyed ();
 		}
 
@@ -108,6 +106,7 @@ namespace SSHDebugger
 
 		public override void Dispose()
 		{
+
 			term.Dispose();
 			SSH.Dispose();
 			base.Dispose();
