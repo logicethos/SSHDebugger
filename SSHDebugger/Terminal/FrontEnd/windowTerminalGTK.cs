@@ -46,7 +46,7 @@ namespace SSHDebugger
 		public Thread DebuggerThread {get; set;}
 
 
-		public windowTerminalGTK(clsHost host) : base(host.Name)
+		public windowTerminalGTK(clsHost host) : base(String.Format("{0} - {1}:{2}",host.Name,host.RemoteHost,host.RemoteSSHPort))
 		{
 
 			SSH = new clsSSHTerminal(host);
@@ -77,8 +77,6 @@ namespace SSHDebugger
 			};
 		}
 
-
-
 		[GLib.ConnectBefore]
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt) {
 			SSH.ShellSend(evnt.Key);
@@ -88,7 +86,6 @@ namespace SSHDebugger
 				return false;
 
  		}
-
 
 		public void Front()
 		{
@@ -101,18 +98,11 @@ namespace SSHDebugger
 		protected override void OnDestroyed ()
 		{
 			Host.Terminal = null;
+			SSH.Dispose();
 			if (DebuggerThread!=null && DebuggerThread.IsAlive) DebuggerThread.Abort();
+			textview1.Dispose();
 			base.OnDestroyed ();
 		}
-
-		public override void Dispose()
-		{
-			
-			textview1.Dispose();
-			SSH.Dispose();
-			base.Dispose();
-		}
-
 	}
 }
 #endif

@@ -44,7 +44,7 @@ namespace SSHDebugger
 		public Thread DebuggerThread {get; set;}
 
 
-		public windowTerminalVTE(clsHost host) : base(host.Name)
+public windowTerminalVTE(clsHost host) : base(String.Format("{0} - {1}:{2}",host.Name,host.RemoteHost,host.RemoteSSHPort))
 		{
 
 			SSH = new clsSSHTerminal(host);
@@ -93,6 +93,8 @@ namespace SSHDebugger
 		{
 			Host.Terminal = null;
 			if (DebuggerThread!=null && DebuggerThread.IsAlive) DebuggerThread.Abort();
+			SSH.Dispose();
+			term.Dispose();
 			base.OnDestroyed ();
 		}
 
@@ -103,15 +105,6 @@ namespace SSHDebugger
 				term.CanFocus = true;
 			});
 		}
-
-		public override void Dispose()
-		{
-
-			term.Dispose();
-			SSH.Dispose();
-			base.Dispose();
-		}
-
 	}
 }
 #endif
