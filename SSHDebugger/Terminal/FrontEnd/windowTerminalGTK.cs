@@ -76,10 +76,15 @@ namespace SSHDebugger
 		}
 
 
+
 		[GLib.ConnectBefore]
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt) {
 			SSH.ShellSend(evnt.Key);
-			return base.OnKeyPressEvent (evnt);
+			if (SSH.LocalEcho)
+				return base.OnKeyPressEvent (evnt);
+			 else
+				return false;
+
  		}
 
 

@@ -102,7 +102,7 @@ namespace SSHDebugger
 					}
 					else
 					{
-						if (String.IsNullOrEmpty(Host.Password)) Host.Password = RequestUserInput("Enter Host Password: ","*");				
+						if (String.IsNullOrEmpty(Host.Password)) Host.Password = RequestUserInput("Enter Host Password: ",'*');				
 						sshClient = new SshClient (Host.RemoteHost, Host.RemoteSSHPort, Host.Username,Host.Password);
 					}
 
@@ -179,15 +179,6 @@ namespace SSHDebugger
 			return started.WaitOne(5000);
 		}
 
-		string Convert(byte[] data, int len)
-		{
-			char[] characters = new char[len];
-			for (int f=0;f<len;f++)
-			{
-				characters[f] = (char)data[f];
-			}
-    		return new string(characters);
-		}
 
 		public void ShellExecute(string command)
 		{
@@ -213,7 +204,7 @@ namespace SSHDebugger
 					}
 					else
 					{
-						if (String.IsNullOrEmpty(Host.Password))	Host.Password = RequestUserInput("Enter Host Password: ","*");				
+						if (String.IsNullOrEmpty(Host.Password))	Host.Password = RequestUserInput("Enter Host Password: ",'*');				
 						sftpClient = new SftpClient (Host.RemoteHost, Host.RemoteSSHPort, Host.Username, Host.Password);
 					}
 
@@ -299,7 +290,13 @@ namespace SSHDebugger
 			}).Start();
 		}
 
-
+		/// <summary>
+		/// Starts an ssh tunnel, where conntection to a local port (which this will listen on), transparently connects it to a remote port.
+		/// </summary>
+		/// <returns><c>true</c>, if tunnel was started, <c>false</c> otherwise.</returns>
+		/// <param name="TunnelPortLocal">Tunnel port local.</param>
+		/// <param name="TunnelPortRemote">Tunnel port remote.</param>
+		/// <param name="LocalNetwork">Local network.</param>
 		public bool StartTunnel(UInt32 TunnelPortLocal, UInt32 TunnelPortRemote, String LocalNetwork = null)
 		{
 
@@ -324,7 +321,6 @@ namespace SSHDebugger
 					forwardPort.Dispose ();
 				}
 			}
-
 
 			forwardPort = new ForwardedPortLocal(LocalNetwork, TunnelPortLocal, "localhost", TunnelPortRemote);
 
@@ -424,7 +420,13 @@ namespace SSHDebugger
 			}
 		}
 
-		public String RequestUserInput(String prompt, String echo=null)
+		/// <summary>
+		/// Requests the user input, without sending it to the ssh connection.
+		/// </summary>
+		/// <returns>The user input.</returns>
+		/// <param name="prompt">Prompt.</param>
+		/// <param name="echo">Echo char. If null, the keypress will be displayed</param>
+		public String RequestUserInput(String prompt, char? echoChar=null)
 		{
 			UserInputMode = true;
 			Write (prompt);
@@ -434,13 +436,13 @@ namespace SSHDebugger
 				if (LastKeyPress == Gdk.Key.BackSpace) {
 					if (input.Length > 0) {
 						input = input.Substring (0, input.Length - 1);
-						if (echo != "") Write ("\b \b");
+						if (echoChar.HasValue) Write ("\b \b");
 					}
 				} else if (LastKeyPress == Gdk.Key.Return) {
 					Write ("\r\n");
 					break;
-				} else {
-					Write (echo ?? LastKeyPress.ToString());
+				} else {					
+					Write (echoChar.HasValue ? echoChar.Value.ToString() : LastKeyPress.ToString());
 					input += LastKeyPress;
 				}
 			}
