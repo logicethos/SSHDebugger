@@ -121,6 +121,7 @@ namespace SSHDebugger
 				}
 				catch (Exception ex)
 				{
+					if (ex.Message.ToLower().Contains("password")) Host.Password=""; //Reset password
 					WriteLine("ssh Error: "+ex.Message);
 					return false;
 				}
@@ -173,17 +174,18 @@ namespace SSHDebugger
 					shellStream.Dispose();
 					shellStream = null;
 				}
-				
+
 			});
 			ShellStreamTask.Start();
 			return started.WaitOne(5000);
 		}
 
 
-		public void ShellExecute(string command)
+		public bool ShellExecute(string command)
 		{
-			if (!StartShellStream()) return;		
+			if (!StartShellStream()) return false;		
 			shellStream.WriteLine(command);
+			return true;
 
 		}
 
@@ -235,6 +237,7 @@ namespace SSHDebugger
 				}
 				catch (Exception ex)
 				{
+					if (ex.Message.ToLower().Contains("password")) Host.Password=""; //Reset password
 					WriteLine("Error: "+ex.Message);
 					return false;
 				}
@@ -243,17 +246,18 @@ namespace SSHDebugger
 		}
 
 
-		public void Execute(String command)
+		public bool Execute(String command)
 		{
-			if (!ConnectSSH ())	return;
+			if (!ConnectSSH ())	return false;
 
 			var cmd = sshClient.CreateCommand (command);
 			Write(cmd.Execute ());
+			return true;
 		}
 
-		public void ExecuteAsync(String command)
+		public bool ExecuteAsync(String command)
 		{
-			if (!ConnectSSH ())	return;
+			if (!ConnectSSH ())	return false;
 
 			var cmd = sshClient.CreateCommand (command);
 			cmd.BeginExecute (
@@ -264,6 +268,7 @@ namespace SSHDebugger
 				);
 				ReadAsync(cmd.ExtendedOutputStream);
 			//	ReadAsync(cmd.OutputStream);
+			return true;
 		}
 
 

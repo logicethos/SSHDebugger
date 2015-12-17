@@ -43,7 +43,7 @@ namespace SSHDebugger
 	public class clsHost : IDisposable
 	{
 
-		public ITerminal Terminal = null;
+		
 
 		public String LocalHost { get; private set;}
 		public UInt32 LocalTunnelPort { get; private set;}
@@ -66,6 +66,17 @@ namespace SSHDebugger
 		public String TerminalFont { get; private set;}
 		public int TerminalRows { get; private set;}
 		public int TerminalCols { get; private set;}
+
+
+		ITerminal _terminal = null;
+		public ITerminal Terminal 
+		{
+			get{ return _terminal;}
+			set{
+				Password = "";  //Reset password
+			 	_terminal = value;
+			 }
+		}
 
 
 		String _hostString;
@@ -120,15 +131,12 @@ namespace SSHDebugger
 
 
 		public SoftDebuggerStartInfo ProcessScript(bool Execute)
-		{
-
-				
+		{			
 			if (Terminal != null) Terminal.SSH.WriteLine("Running script: {0}",Path.GetFileName(ScriptPath));
 			int ConsolePort = -1;
 			int LineCount = 0;
 
 			try {
-				
 				using (var fs = File.OpenText (ScriptPath)) {
 					String linein;
 					while ((linein = fs.ReadLine ()) != null) {
@@ -146,11 +154,14 @@ namespace SSHDebugger
 								Process.Start(startInfo);
 							}							
 						} else if (linein.StartsWith (">")) {
-							if (Execute) Terminal.SSH.Execute(linein.Substring(1));
+							if (Execute)
+								if (!Terminal.SSH.Execute(linein.Substring(1))) return null;
 						} else if (linein.StartsWith ("&>")) {
-							if (Execute) Terminal.SSH.ExecuteAsync(linein.Substring(2));
+							if (Execute)
+							 if (!Terminal.SSH.ExecuteAsync(linein.Substring(2))) return null;
 						} else if (linein.StartsWith ("s>") || linein.StartsWith ("S>")) {
-							if (Execute) Terminal.SSH.ShellExecute(linein.Substring(2));
+							if (Execute)
+  							  if (!Terminal.SSH.ShellExecute(linein.Substring(2))) return null;
 						} else {
 							var commandLine = linein.Split (new char[]{ ' ', '=' }, 2);
 							var command = commandLine [0].Trim ();
