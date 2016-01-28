@@ -1,17 +1,16 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Addin id="SSHDebugger"
 	namespace="SSHDebugger"
-	version="0.1">
+	version="0.2">
 	<Header>
 		<Name>SSH Debugger (VTE Xterm version)</Name>
 		<Category>Debugging</Category>
 		<Name locale="en-GB">SSH Debugger</Name>
-		<Description>Remotely execute, and debug your projects via WiFi/Ethernet. Useful for embedded devices, and remote servers.
-Monodevelop Linux users, with Gnomes VTE libs installed, get a full Xterm console.</Description>
+		<Description>Deploy, execute and debug your .NET apps running on a remote computer, directly from Monodevelop & Xamarin Studio. Includes a full XTerm console, on the Linux version. Standard text window on Win & Mac.</Description>
 		<Author>Stuart Johnson, Logic Ethos Ltd</Author>
 		<Url>https://github.com/logicethos/SSHDebugger</Url>
 		<UpdateRank>MySpecialTag:Normal</UpdateRank>
-		<PreviewImage>SSHDebugger.png</PreviewImage>
+		<PreviewImage>../SSHDebugger.png</PreviewImage>
 	</Header>
 
 	<Runtime>
