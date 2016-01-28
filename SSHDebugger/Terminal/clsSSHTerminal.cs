@@ -382,6 +382,7 @@ namespace SSHDebugger
 				return true;
 			} catch (Exception ex)
 			{
+				WriteLine("Error "+ex.Message);
 				return false;
 			}
 		}
