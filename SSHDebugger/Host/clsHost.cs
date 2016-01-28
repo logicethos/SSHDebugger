@@ -91,7 +91,7 @@ namespace SSHDebugger
 				var pt1 = value.IndexOf ('@');
 				var pt2 = value.IndexOf (':');
 				if (pt1 > -1) Username = value.Substring (0, pt1);
-				if (pt2 < pt1) {
+				if (pt2 > -1 && pt2 < pt1) { //password included in url
 					var userSplit = Username.Split (new char[]{ ':' }, 2);
 					Username = userSplit[0];
 					Password = userSplit[1];
@@ -125,8 +125,22 @@ namespace SSHDebugger
 			TerminalRows = 50;
 			TerminalEmulation = "vt100";
 
-			ProcessScript (false);
-			clsSSHDebuggerEngine.HostsList.Add (this);
+			try
+			{
+				ProcessScript (false);
+				clsSSHDebuggerEngine.HostsList.Add (this);
+			}
+			catch (Exception ex)
+			{
+				Gtk.Application.Invoke (delegate {
+						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok,ex.Message)) {
+							md.Title = "ProcessScript";
+							md.Run ();
+							md.Destroy ();
+						}
+					});	
+			}
+
 		}
 
 
@@ -248,17 +262,11 @@ namespace SSHDebugger
 				}
 				if (Execute) return DebuggerInfo(ConsolePort);
 			} catch (Exception ex) {
-				String errorMsg = "SSH Script ended (Line {0}:{1})";
+				String errorMsg = String.Format("SSH Script ended (Line {0}:{1})", LineCount, ex.Message);
 				if (Terminal != null) {
-					Terminal.SSH.WriteLine (errorMsg, LineCount, ex.Message);
+					Terminal.SSH.WriteLine (errorMsg);
 				} else {
-					Gtk.Application.Invoke (delegate {
-						using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok,errorMsg ,LineCount, ex.Message)) {
-							md.Title = "ProcessScript";
-							md.Run ();
-							md.Destroy ();
-						}
-					});	
+					throw new Exception(errorMsg);
 				}
 			}
 			finally {
