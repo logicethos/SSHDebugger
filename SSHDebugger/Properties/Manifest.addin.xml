@@ -6,7 +6,7 @@
 		<Name>SSH Debugger (VTE Xterm version)</Name>
 		<Category>Debugging</Category>
 		<Name locale="en-GB">SSH Debugger</Name>
-		<Description>Deploy, execute and debug your .NET apps running on a remote computer, directly from Monodevelop and Xamarin Studio. Includes a full XTerm console, on the Linux version. Standard text window on Win & Mac.</Description>
+		<Description>Deploy, execute and debug your .NET apps running on a remote computer, directly from Monodevelop and Xamarin Studio. Includes a full XTerm console, on the Linux version. Standard text window on Win and Mac.</Description>
 		<Author>Stuart Johnson, Logic Ethos Ltd</Author>
 		<Url>https://github.com/logicethos/SSHDebugger</Url>
 		<UpdateRank>MySpecialTag:Normal</UpdateRank>
