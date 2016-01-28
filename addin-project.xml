@@ -1,6 +1,6 @@
 <AddinProject appVersion="5.9">
 	<Project platforms="Linux">
-		<AddinFile>SSHDebugger/bin/Release/SSHDebugger.dll</AddinFile>
+		<AddinFile>SSHDebugger/bin/Release-VTE/SSHDebugger.dll</AddinFile>
 		<BuildFile>SSHDebugger.sln</BuildFile>
 		<BuildConfiguration>Release-VTE</BuildConfiguration>
 	</Project>
