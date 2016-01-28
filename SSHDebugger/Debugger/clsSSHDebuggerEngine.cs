@@ -59,15 +59,19 @@ namespace SSHDebugger
 			return true;
 		}
 
-		public void BuildList()
+		public bool BuildList()
 		{
+			bool addedNew = false;
+
 			foreach (var file in IdeApp.ProjectOperations.CurrentSelectedProject.Files.Where(x => x.Name.EndsWith(".ssh.txt")))
 			{
 				if (!HostsList.Exists(x=>x.ScriptPath == file.FilePath))
 				{
 					new clsHost(file.FilePath);
+					addedNew=true;
 				}
 			}
+			return addedNew;
 		}
 
 		public override DebuggerSession CreateSession ()
@@ -82,10 +86,10 @@ namespace SSHDebugger
 			SoftDebuggerStartInfo dsi = null;
 			try{
 
-				//If no host is selected, or ther terminal window is closed
-				if (selectedHost==null || selectedHost.Terminal==null)
+				//If new host, no host is selected, or ther terminal window is closed
+				if (BuildList () || selectedHost==null || selectedHost.Terminal==null)
 				{
-					BuildList (); //Load any new templates
+					//Load any new templates
 					selectedHost = InvokeSynch<clsHost> (GetDebuggerInfo);  //Query user for selected host
 				}
 	
