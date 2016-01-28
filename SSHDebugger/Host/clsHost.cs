@@ -101,7 +101,7 @@ namespace SSHDebugger
 				if (pt2 > -1) {
 					RemoteSSHPort = int.Parse (value.Substring (pt2 + 1, value.Length - pt2 - 1));
 				} else {
-					RemoteSSHPort = 21;
+					RemoteSSHPort = 22;
 					pt2 = value.Length;
 				}
 				RemoteHost = value.Substring (pt1+1, pt2 - pt1 -1);

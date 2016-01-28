@@ -8,7 +8,7 @@ Includes a full XTerm console, on the Linux version. Standard text window on Win
 Uses:
 
  * Develop .NET apps for embedded devices and small computers such as the Raspberry Pi.
- * Deploy and debug apps running in a datacentre, or virtual machine.
+ * Deploy and debug apps running in a datacentre, docker container or virtual machine.
 
 Features:
   
