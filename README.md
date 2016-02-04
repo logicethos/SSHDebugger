@@ -23,7 +23,9 @@ Steps for use:
  2. Add the SSH Debugger template from this add-in to your project, and change the host address.
  3. Add any dependency files to the script (dll's, data etc) for copying (scp or rsync).
  4. Run -> Run With -> SSH Debugger
-  
+
+ See demo https://www.youtube.com/watch?v=W2sZ56q5C8A
+
 Dependencies:
 
   Windows & Mac: none
