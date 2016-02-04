@@ -116,6 +116,7 @@ namespace SSHDebugger
 											sshClient.ConnectionInfo.MaxSessions,
 											sshClient.ConnectionInfo.Encoding,											
 											sshClient.ConnectionInfo.CurrentServerEncryption);
+
 						return true;
 					}
 				}
@@ -376,8 +377,28 @@ namespace SSHDebugger
 				using (var fs = File.OpenRead(LocalPath))
 				{
 					sftpClient.UploadFile (fs, RemoteFileName,true, (bytes) => {Write(".");});
-	
 				}
+				WriteLine("OK");
+				return true;
+			} catch (Exception ex)
+			{
+				WriteLine("Error "+ex.Message);
+				return false;
+			}
+		}
+
+		public bool SynchronizeDir(String LocalDir, String RemoteDir = null, String SearchPattern = "*" )
+		{
+
+			if (!ConnectSFTP ()) return false;
+
+			if (RemoteDir==null || RemoteDir == "~") RemoteDir = sftpClient.WorkingDirectory;
+
+			Write("sftp Synchronizing Directories: {0}->{1}...",LocalDir,RemoteDir);
+
+			try
+			{	
+				sftpClient.SynchronizeDirectories(LocalDir,RemoteDir,SearchPattern);
 				WriteLine("OK");
 				return true;
 			} catch (Exception ex)

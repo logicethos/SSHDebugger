@@ -60,7 +60,7 @@ namespace SSHDebugger
 
 		public String WorkingDir { get; private set;}
 
-		public String buildpath { get; private set;}
+		public String build_exe_path { get; private set;}
 
 		public String TerminalEmulation { get; private set;}
 		public String TerminalFont { get; private set;}
@@ -114,7 +114,7 @@ namespace SSHDebugger
 		{	
 			var buildTarget = MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			var buildConfigs = ((DotNetProject)buildTarget).Configurations;
-			buildpath = buildConfigs.Cast<DotNetProjectConfiguration> ().First (x => x.DebugMode).CompiledOutputName;
+			build_exe_path = buildConfigs.Cast<DotNetProjectConfiguration> ().First (x => x.DebugMode).CompiledOutputName;
 
 			ScriptPath = filePath;
 			LocalHost = IPAddress.Loopback.ToString ();
@@ -243,6 +243,9 @@ namespace SSHDebugger
 													if (!Terminal.SSH.UploadFile(file)) return null;
 												}
 												break;
+											case "scp-sync":
+											if (!Terminal.SSH.SynchronizeDir(Path.GetDirectoryName(build_exe_path))) return null;
+												break;
 											case "starttunnel": 
 												if (!Terminal.SSH.StartTunnel(LocalTunnelPort,RemoteTunnelPort)) return null;
 												break;
@@ -299,13 +302,17 @@ namespace SSHDebugger
 			switch (input)
 			{
 			case "exe-path":
-				return buildpath;
+				return build_exe_path;
 			case "mdb-path":
-				return buildpath + ".mdb";
+				return build_exe_path + ".mdb";
+			case "build-path":
+				return Path.GetDirectoryName(build_exe_path);
+			case "work-dir":
+				return WorkingDir;
 			case "RemoteTunnelPort":
 				return RemoteTunnelPort.ToString ();
 			case "exe-file":
-				return Path.GetFileName (buildpath);
+				return Path.GetFileName (build_exe_path);
 			default:
 				return "?";
 					

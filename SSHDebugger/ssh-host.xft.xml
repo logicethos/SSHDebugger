@@ -23,6 +23,12 @@
 #   '<' or '&<' for local synchronous or asynchronous operation.
 #   '>' or '&>' for remote synchronous or asynchronous operation.
 #   's>' for synchronous shell input/output.
+#
+#	[exe-file]	 =  output .exe filename
+#   [exe-path]   =  path to output .exe
+# 	[mdb-path]   =  path to output .exe.mdb
+#	[build-path] =  path to output
+#	[work-dir]	 =  remote working dir
 
 # Remember: you may want to add this file to your repository ignore file. (*.xft.ssh)
 
@@ -40,7 +46,9 @@ LocalTunnelPort 8000
 RemoteTunnelPort 12345
 
 #Copy executable & debug file to remote.
-scp-copy $[exe-path] $[mdb-path]
+#scp-copy $[exe-path] $[mdb-path]
+# or use scp-sync, to copy the build directory (and all the .dlls that may be needed)
+scp-sync
 
 StartTunnel
 
