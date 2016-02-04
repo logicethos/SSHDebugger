@@ -182,12 +182,12 @@ namespace SSHDebugger
 		}
 
 
-		public bool ShellExecute(string command)
+		public bool ShellExecute(string command, TimeSpan? timespan = null)
 		{
 			if (!StartShellStream()) return false;		
 			shellStream.WriteLine(command);
-			return true;
 
+			return timespan == null || shellStream.Expect(command,timespan.Value) != null;
 		}
 
 
@@ -332,12 +332,15 @@ namespace SSHDebugger
 
 			sshClient.AddForwardedPort(forwardPort);
 
+			forwardPort.Exception += (object sender, ExceptionEventArgs e) => 
+			{
+					WriteLine("Tunnel error: {0}",e.Exception.Message);
+			};
 
 			forwardPort.RequestReceived += (object sender, PortForwardEventArgs e) => 
 			{
 				WriteLine("Tunnel connection: {0}->{1}",e.OriginatorHost, e.OriginatorPort);
 			};
-
 			forwardPort.Start();
 			WriteLine ("OK");
 
