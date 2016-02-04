@@ -83,10 +83,11 @@ namespace SSHDebugger
 				combo.SetActiveIter (iter);
 				SelectedHost = clsSSHDebuggerEngine.HostsList [combo.Active];
 
-				combo.SelectionNotifyEvent += (o, args) => 
+				combo.Changed += (object sender, EventArgs e) => 
 				{
 					SelectedHost = clsSSHDebuggerEngine.HostsList [combo.Active];
 				};
+
 		}
 
 		table.Attach (combo, 1, 2, 0, 1);
