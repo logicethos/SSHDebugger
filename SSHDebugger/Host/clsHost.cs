@@ -182,7 +182,7 @@ namespace SSHDebugger
 							 if (!Terminal.SSH.ExecuteAsync(linein.Substring(2))) return null;
 						} else if (linein.StartsWith ("s>") || linein.StartsWith ("S>")) {
 							if (Execute)
-  							  if (!Terminal.SSH.ShellExecute(linein.Substring(2))) return null;
+  							  if (!Terminal.SSH.ShellExecute(linein.Substring(2), TimeSpan.FromSeconds(5))) return null;
 						} else {
 							var commandLine = linein.Split (new char[]{ ' ', '=' }, 2);
 							var command = commandLine [0].Trim ();
@@ -250,7 +250,7 @@ namespace SSHDebugger
 												if (!Terminal.SSH.StartTunnel(LocalTunnelPort,RemoteTunnelPort)) return null;
 												break;
 											case "sleep":
-												Thread.Sleep(int.Parse(commandArgs)*1000);
+												Thread.Sleep(int.Parse(commandArgs));
 												break;
 											default:
 											if (Terminal != null) Terminal.SSH.WriteLine ("Script Error (Line {0}): {1} Unkown command", LineCount, linein);
