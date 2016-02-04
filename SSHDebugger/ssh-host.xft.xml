@@ -46,8 +46,9 @@ LocalTunnelPort 8000
 RemoteTunnelPort 12345
 
 #Copy executable & debug file to remote.
-#scp-copy $[exe-path] $[mdb-path]
-# or use scp-sync, to copy the build directory (and all the .dlls that may be needed)
+scp-copy $[exe-path] $[mdb-path]
+
+# scp-sync, copys additional build directory file (e.g .dlls that may be needed)
 scp-sync
 
 StartTunnel
