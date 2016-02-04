@@ -55,6 +55,8 @@ StartTunnel
 #Start remote application, with debug listener.
 s>mono --debug --debugger-agent=transport=dt_socket,address=localhost:$[RemoteTunnelPort],server=y,suspend=y $[exe-file]
 
+#Allow time for remote debugger to initialise (in milliseconds)
+sleep 150
 ]]>
         </File>
 
