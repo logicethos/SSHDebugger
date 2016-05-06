@@ -97,34 +97,29 @@ namespace SSHDebugger
 
 					if (selectedHost.Terminal == null)
 					{
-						Gtk.Application.Invoke (delegate {
 						#if VTE
 							selectedHost.Terminal = new windowTerminalVTE(selectedHost);
 						#else
 							selectedHost.Terminal = new windowTerminalGTK(selectedHost);
 						#endif
-							while (GLib.MainContext.Iteration ());
-							termWait.Set();
-						});
-	
-						if (!termWait.WaitOne(1000) || selectedHost.Terminal==null)
-						{
-							Gtk.Application.Invoke (delegate
-								{
-									using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Unable to start terminal"))
-									{
-										md.Run ();
-										md.Destroy();
-									}
-								});
-							return null;
-						}
 					}
 					else
 					{
 						selectedHost.Terminal.Front();
 					}
-					dsi = selectedHost.ProcessScript(true);
+
+					var done = new ManualResetEvent (false);
+					Task.Run (() => {
+						dsi = selectedHost.ProcessScript (true);
+					}).ContinueWith ((t) => {
+						done.Set ();
+					});
+
+					while (true) {
+						Gtk.Application.RunIteration ();
+						if (done.WaitOne (0))
+							break;
+					}
 				
 				}
 
@@ -210,7 +205,8 @@ namespace SSHDebugger
 
 		static T InvokeSynch<T> (Func<T> func)
 		{
-			if (MonoDevelop.Ide.DispatchService.IsGuiThread)
+			
+			if (MonoDevelop.Core.Runtime.IsMainThread)
 				return func ();
 
 			var ev = new System.Threading.ManualResetEvent (false);
