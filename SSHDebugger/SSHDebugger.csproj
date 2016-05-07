@@ -61,7 +61,7 @@
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.3.2\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.2\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <Reference Include="Renci.SshNet">
       <HintPath>..\Renci.SshNet.dll</HintPath>
@@ -80,11 +80,11 @@
     <Folder Include="Terminal\FrontEnd\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="..\SSHDebugger.png">
       <Link>SSHDebugger.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <AddinReference Include="MonoDevelop.Debugger" />

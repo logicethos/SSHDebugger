@@ -114,7 +114,7 @@ namespace SSHDebugger
 		{	
 			var buildTarget = MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			var buildConfigs = ((DotNetProject)buildTarget).Configurations;
-			build_exe_path = buildConfigs.Cast<DotNetProjectConfiguration> ().First (x => x.DebugMode).CompiledOutputName;
+			build_exe_path = buildConfigs.Cast<DotNetProjectConfiguration> ().First (x => x.DebugType == "full").CompiledOutputName;
 
 			ScriptPath = filePath;
 			LocalHost = IPAddress.Loopback.ToString ();
