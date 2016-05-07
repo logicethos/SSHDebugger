@@ -68,6 +68,7 @@ namespace SSHDebugger
 		public clsSSHTerminal(clsHost host)
 		{
 			Host = host;
+			AddDefaultPrivateKey ();
 		}
 
 		public void SetHost(clsHost host)
@@ -75,6 +76,17 @@ namespace SSHDebugger
 			Host = host;
 		}
 
+		void AddDefaultPrivateKey ()
+		{
+			string homePath = (Environment.OSVersion.Platform == PlatformID.Unix ||
+			                   Environment.OSVersion.Platform == PlatformID.MacOSX) 
+				? Environment.GetEnvironmentVariable ("HOME") 
+			                 : Environment.ExpandEnvironmentVariables ("%HOMEDRIVE%%HOMEPATH%");
+			var keyPath = Path.Combine (homePath, ".ssh/id_rsa");
+			if (File.Exists (keyPath))
+				AddPrivateKeyFile (keyPath);
+			
+		}
 		public void AddPrivateKeyFile(String path)
 		{
 			PrivateKeyFileList.Add(new PrivateKeyFile(path));
