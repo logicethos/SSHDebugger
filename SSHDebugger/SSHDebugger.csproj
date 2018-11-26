@@ -57,6 +57,7 @@
     <Compile Include="Terminal\clsSSHTerminal.cs" />
     <Compile Include="Terminal\ITerminal.cs" />
     <Compile Include="Terminal\FrontEnd\windowTerminalGTK.cs" />
+    <Compile Include="Extensions\ExtGdkKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Manifest.addin.xml" />
@@ -78,6 +79,7 @@
     <Folder Include="Host\" />
     <Folder Include="Terminal\" />
     <Folder Include="Terminal\FrontEnd\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SSHDebugger.png">

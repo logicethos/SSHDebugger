@@ -35,6 +35,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using SSHDebugger.Extensions;
 
 namespace SSHDebugger
 {
@@ -456,8 +457,32 @@ namespace SSHDebugger
 				if (LocalEcho) Write(key.ToString());
 				if (shellStream!=null && shellStream.CanWrite)
 				{
-				 	shellStream.WriteByte((byte)key);
-				 	shellStream.Flush();
+                    byte[] charBytes = null;
+
+                    switch (key)
+                    {
+                        case Gdk.Key.Shift_L:
+                        case Gdk.Key.Shift_R:
+                        case Gdk.Key.ISO_Level3_Shift: //Alt Gr
+                            //Ignore
+                            break;
+                        case Gdk.Key.Return:
+                        case Gdk.Key.KP_Enter:
+                            charBytes = Encoding.UTF8.GetBytes(Environment.NewLine);
+                            break;
+                        case Gdk.Key.BackSpace:
+                            charBytes = new byte[] { (byte)'\b' };
+                            break;
+                        default:
+                            charBytes = Encoding.UTF8.GetBytes(new char[] { key.GetChar() });
+                            break;
+                    }
+
+                    if (charBytes != null)
+                    {
+                        shellStream.Write(charBytes, 0, charBytes.Length);
+                        shellStream.Flush();
+                    }
 				}
 			}
 		}
