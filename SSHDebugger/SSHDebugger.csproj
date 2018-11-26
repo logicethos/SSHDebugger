@@ -63,11 +63,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Reference Include="Renci.SshNet">
-      <HintPath>..\Renci.SshNet.dll</HintPath>
-    </Reference>
     <Reference Include="vte-sharp" Condition="$(DefineConstants.Contains('VTE'))">
       <HintPath>..\vte-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
