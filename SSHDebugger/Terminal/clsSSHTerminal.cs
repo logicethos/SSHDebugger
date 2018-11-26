@@ -473,7 +473,7 @@ namespace SSHDebugger
 			UserInputMode = true;
 			Write (prompt);
 			String input = "";
-			while (userkeypress.WaitOne ())
+			while (UserInputMode && userkeypress.WaitOne ())
 			{				
 				switch(LastKeyPress)
 				{
@@ -490,6 +490,7 @@ namespace SSHDebugger
 				    case Gdk.Key.KP_Enter:
 					{
 					    Write(Environment.NewLine);
+					    UserInputMode = false; //Stop Input
 					    break;
 					}
 				    case Gdk.Key.Shift_L:
