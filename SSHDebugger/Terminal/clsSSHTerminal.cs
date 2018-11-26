@@ -475,18 +475,37 @@ namespace SSHDebugger
 			String input = "";
 			while (userkeypress.WaitOne ())
 			{				
-				if (LastKeyPress == Gdk.Key.BackSpace) {
-					if (input.Length > 0) {
-						input = input.Substring (0, input.Length - 1);
-						if (echoChar.HasValue) Write ("\b \b");
+				switch(LastKeyPress)
+				{
+				    case Gdk.Key.BackSpace:
+					{
+					    if (input.Length > 0)
+					    {
+						input = input.Substring(0, input.Length - 1);
+						if (echoChar.HasValue) Write("\b \b");
+					    }
 					}
-				} else if (LastKeyPress == Gdk.Key.Return) {
-					Write ("\r\n");
 					break;
-				} else {
-					var keyValue = (char)LastKeyPress;
-					Write (echoChar.HasValue ? echoChar.Value.ToString() : keyValue.ToString());
-					input += keyValue;
+				    case Gdk.Key.Return:
+				    case Gdk.Key.KP_Enter:
+					{
+					    Write(Environment.NewLine);
+					    break;
+					}
+				    case Gdk.Key.Shift_L:
+				    case Gdk.Key.Shift_R:
+				    case Gdk.Key.ISO_Level3_Shift: //Alt Gr
+					{
+					    //Do nothing
+					}
+					break;
+				    default:
+					{
+					    var keyValue = (char)Gdk.Keyval.ToUnicode((uint)LastKeyPress);
+					    Write(echoChar.HasValue ? echoChar.Value.ToString() : keyValue.ToString());
+					    input += keyValue;
+					}
+					break;
 				}
 			}
 			UserInputMode = false;
