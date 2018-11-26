@@ -483,9 +483,10 @@ namespace SSHDebugger
 				} else if (LastKeyPress == Gdk.Key.Return) {
 					Write ("\r\n");
 					break;
-				} else {					
-					Write (echoChar.HasValue ? echoChar.Value.ToString() : LastKeyPress.ToString());
-					input += LastKeyPress;
+				} else {
+					var keyValue = (char)LastKeyPress;
+					Write (echoChar.HasValue ? echoChar.Value.ToString() : keyValue.ToString());
+					input += keyValue;
 				}
 			}
 			UserInputMode = false;
