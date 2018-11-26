@@ -297,27 +297,30 @@ namespace SSHDebugger
 			return sb.ToString ();
 		}
 
-		String GetVar (String input)
-		{
-			switch (input)
-			{
-			case "exe-path":
-				return build_exe_path;
-			case "mdb-path":
-				return build_exe_path + ".mdb";
-			case "build-path":
-				return Path.GetDirectoryName(build_exe_path);
-			case "work-dir":
-				return WorkingDir;
-			case "RemoteTunnelPort":
-				return RemoteTunnelPort.ToString ();
-			case "exe-file":
-				return Path.GetFileName (build_exe_path);
-			default:
-				return "?";
-					
-			}
-		}
+		String GetVar(String input)
+        {
+            switch (input)
+            {
+                case "exe-path":
+                    return build_exe_path;
+                case "mdb-path":
+                    return build_exe_path + ".mdb";
+                case "pdb-path":
+                    //Replace Test.exe => Test.pdb
+                    return build_exe_path.Substring(0, build_exe_path.Length - ".exe".Length) + ".pdb";
+                case "build-path":
+                    return Path.GetDirectoryName(build_exe_path);
+                case "work-dir":
+                    return WorkingDir;
+                case "RemoteTunnelPort":
+                    return RemoteTunnelPort.ToString();
+                case "exe-file":
+                    return Path.GetFileName(build_exe_path);
+                default:
+                    return "?";
+
+            }
+        }
 
 
 		public SoftDebuggerStartInfo DebuggerInfo (int consolePort = -1)
