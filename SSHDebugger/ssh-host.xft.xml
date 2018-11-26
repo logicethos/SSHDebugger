@@ -27,6 +27,7 @@
 #	[exe-file]	 =  output .exe filename
 #   [exe-path]   =  path to output .exe
 # 	[mdb-path]   =  path to output .exe.mdb
+#   [pdb-path]   =  path to output .pdb
 #	[build-path] =  path to output
 #	[work-dir]	 =  remote working dir
 
