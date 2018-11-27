@@ -42,189 +42,227 @@ using MonoDevelop.Projects;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Debugger;
-
+using Newtonsoft.Json;
+using System.Text;
+using SSHDebugger.Helpers;
 
 namespace SSHDebugger
 {
-	public class clsSSHDebuggerEngine: DebuggerEngineBackend
-	{
-		clsSSHSoftDebuggerSession DebuggerSession = null;
-		public static List<clsHost> HostsList = new List<clsHost>();
-	
-		clsHost selectedHost = null;
-		AutoResetEvent termWait = new AutoResetEvent (false);
+    public class clsSSHDebuggerEngine : DebuggerEngineBackend
+    {
+        clsSSHSoftDebuggerSession DebuggerSession = null;
+        public static List<clsHost> HostsList = new List<clsHost>();
 
-		public override bool CanDebugCommand (ExecutionCommand cmd)
-		{			
-			return true;
-		}
+        clsHost selectedHost = null;
+        AutoResetEvent termWait = new AutoResetEvent(false);
 
-		public bool BuildList()
-		{
-			bool addedNew = false;
+        public override bool IsDefaultDebugger(ExecutionCommand cmd)
+        {
+            return base.IsDefaultDebugger(cmd);
+        }
 
-			foreach (var file in IdeApp.ProjectOperations.CurrentSelectedProject.Files.Where(x => x.Name.EndsWith(".ssh.txt")))
-			{
-				if (!HostsList.Exists(x=>x.ScriptPath == file.FilePath))
-				{
-					new clsHost(file.FilePath);
-					addedNew=true;
-				}
-			}
-			return addedNew;
-		}
+        public override bool CanDebugCommand(ExecutionCommand cmd)
+        {
+            return true;
+        }
 
-		public override DebuggerSession CreateSession ()
-		{
-			DebuggerSession = new clsSSHSoftDebuggerSession ();
-			return DebuggerSession;
-		}
+        private bool BuildList()
+        {
+            bool addedNew = false;
 
-		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
-		{
 
-			SoftDebuggerStartInfo dsi = null;
-			try{
+            Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
 
-				//If new host, no host is selected, or ther terminal window is closed
-				if (BuildList () || selectedHost==null || selectedHost.Terminal==null)
-				{
-					//Load any new templates
-					selectedHost = InvokeSynch<clsHost> (GetDebuggerInfo);  //Query user for selected host
-				}
-	
-				if (selectedHost != null) {
+            //Find Startup-Project
+            var solution = (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem as Solution);
+            if (solution.StartupItem != null)
+                project = solution.StartupItem as Project;
 
-					if (selectedHost.Terminal == null)
-					{
-						#if VTE
-							selectedHost.Terminal = new windowTerminalVTE(selectedHost);
-						#else
+            if(project == null)
+            {
+                MessageHelper.ShowMessage("SSH Debugger - No Project found", "Cannot start SSH Debugger, because no project found!");
+                return addedNew;
+            }
+
+            foreach (var file in project.Files.Where(x => x.Name.EndsWith(".ssh.txt")))
+            {
+                if (!HostsList.Exists(x => x.ScriptPath == file.FilePath))
+                {
+                    new clsHost(project, file.FilePath);
+                    addedNew = true;
+                }
+            }
+            return addedNew;
+        }
+
+        public override DebuggerSession CreateSession()
+        {
+            DebuggerSession = new clsSSHSoftDebuggerSession();
+            return DebuggerSession;
+        }
+
+        public override DebuggerStartInfo CreateDebuggerStartInfo(ExecutionCommand c)
+        {
+
+            SoftDebuggerStartInfo dsi = null;
+            try
+            {
+
+                //If new host, no host is selected, or ther terminal window is closed
+                if (BuildList() || selectedHost == null || selectedHost.Terminal == null)
+                {
+                    //Load any new templates
+                    selectedHost = InvokeSynch<clsHost>(GetDebuggerInfo);  //Query user for selected host
+                }
+
+                if (selectedHost != null)
+                {
+
+                    if (selectedHost.Terminal == null)
+                    {
+#if VTE
+                        selectedHost.Terminal = new windowTerminalVTE(selectedHost);
+#else
 							selectedHost.Terminal = new windowTerminalGTK(selectedHost);
-						#endif
-					}
-					else
-					{
-						selectedHost.Terminal.Front();
-					}
+#endif
+                    }
+                    else
+                    {
+                        selectedHost.Terminal.Front();
+                    }
 
-					var done = new ManualResetEvent (false);
-					Task.Run (() => {
-						dsi = selectedHost.ProcessScript (true);
-					}).ContinueWith ((t) => {
-						done.Set ();
-					});
+                    var done = new ManualResetEvent(false);
+                    Task.Run(() =>
+                    {
+                        dsi = selectedHost.ProcessScript(true);
+                    }).ContinueWith((t) =>
+                    {
+                        done.Set();
+                    });
 
-					while (true) {
-						Gtk.Application.RunIteration ();
-						if (done.WaitOne (0))
-							break;
-					}
-				
-				}
+                    while (true)
+                    {
+                        Gtk.Application.RunIteration();
+                        if (done.WaitOne(0))
+                            break;
+                    }
 
-				if (dsi != null) selectedHost.Terminal.SSH.WriteLine("Starting debugger");
-					
-				return dsi;
-			}
-			catch (ThreadAbortException)  //User closed terminal (probably)
-			{
-				return null;
-			}
-			catch (Exception ex)
-			{
-				Gtk.Application.Invoke (delegate
-					{
-						using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Terminal error "+ex.Message))
-						{
-							md.Run ();
-							md.Destroy();
-						}
-					});
-				return null;
-			}
-			
-		}
+                }
 
-		void OpenTerminal()
-		{
+                if (dsi != null) selectedHost.Terminal.SSH.WriteLine("Starting debugger");
 
-		}
+                return dsi;
+            }
+            catch (ThreadAbortException)  //User closed terminal (probably)
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Gtk.Application.Invoke(delegate
+                   {
+                       using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Terminal error: " + ex.Message))
+                       {
+                           md.Run();
+                           md.Destroy();
+                       }
+                   });
+                return null;
+            }
 
-		clsHost GetDebuggerInfo ()
-		{
-			ResponseType response;
-			String filepath = null;
-			clsHost selectedHost = null;
+        }
 
-			try {
-				
-				using (var dlg = new clsDebuggerOptionsDialog ())
-				{
-					response = (Gtk.ResponseType) dlg.Run();
-					if (dlg.SelectedHost!=null)
-					{
-						filepath = dlg.SelectedHost.ScriptPath;
-						selectedHost = dlg.SelectedHost;
-					}
-					dlg.Destroy();
-				}
+        void OpenTerminal()
+        {
 
-				while (GLib.MainContext.Iteration ());
-					
-				if (response == Gtk.ResponseType.Accept) {
+        }
 
-					Gtk.Application.Invoke (delegate
-					{
-						using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Please add a ssh template file manually to your project"))
-						{
-						md.Run ();
-						md.Destroy();
-						}
-					});
-					return null;
-				} else if (response != Gtk.ResponseType.Ok)
-					return null;
+        clsHost GetDebuggerInfo()
+        {
+            ResponseType response;
+            String filepath = null;
+            clsHost selectedHost = null;
 
-				var properties = PropertyService.Get ("MonoDevelop.Debugger.Soft.SSHDebug", new Properties ());
-				properties.Set ("host", filepath);
+            try
+            {
 
-				return selectedHost;
-			}
-			catch(Exception ex) {
-				Gtk.Application.Invoke (delegate {
-					using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, ex.Message)) {
-						md.Title = "SoftDebuggerStartInfo";
-						md.Run ();
-						md.Destroy();
-					}
-				});
-				return null;
-			}
-		}
+                using (var dlg = new clsDebuggerOptionsDialog())
+                {
+                    response = (Gtk.ResponseType)dlg.Run();
+                    if (dlg.SelectedHost != null)
+                    {
+                        filepath = dlg.SelectedHost.ScriptPath;
+                        selectedHost = dlg.SelectedHost;
+                    }
+                    dlg.Destroy();
+                }
 
-		static T InvokeSynch<T> (Func<T> func)
-		{
-			
-			if (MonoDevelop.Core.Runtime.IsMainThread)
-				return func ();
+                while (GLib.MainContext.Iteration()) ;
 
-			var ev = new System.Threading.ManualResetEvent (false);
-			T val = default (T);
-			Exception caught = null;
-			Gtk.Application.Invoke (delegate {
-				try {
-					val = func ();
-				} catch (Exception ex) {
-					caught = ex;
-				} finally {
-					ev.Set ();
-				}
-			});
-			ev.WaitOne ();
-			if (caught != null)
-				throw caught;
-			return val;
-		}
-	}
+                if (response == Gtk.ResponseType.Accept)
+                {
+
+                    Gtk.Application.Invoke(delegate
+                   {
+                       using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, "Please add a ssh template file manually to your project"))
+                       {
+                           md.Run();
+                           md.Destroy();
+                       }
+                   });
+                    return null;
+                }
+                else if (response != Gtk.ResponseType.Ok)
+                    return null;
+
+                var properties = PropertyService.Get("MonoDevelop.Debugger.Soft.SSHDebug", new Properties());
+                properties.Set("host", filepath);
+
+                return selectedHost;
+            }
+            catch (Exception ex)
+            {
+                Gtk.Application.Invoke(delegate
+                {
+                    using (var md = new MessageDialog(null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, ex.Message))
+                    {
+                        md.Title = "SoftDebuggerStartInfo";
+                        md.Run();
+                        md.Destroy();
+                    }
+                });
+                return null;
+            }
+        }
+
+        static T InvokeSynch<T>(Func<T> func)
+        {
+
+            if (MonoDevelop.Core.Runtime.IsMainThread)
+                return func();
+
+            var ev = new System.Threading.ManualResetEvent(false);
+            T val = default(T);
+            Exception caught = null;
+            Gtk.Application.Invoke(delegate
+            {
+                try
+                {
+                    val = func();
+                }
+                catch (Exception ex)
+                {
+                    caught = ex;
+                }
+                finally
+                {
+                    ev.Set();
+                }
+            });
+            ev.WaitOne();
+            if (caught != null)
+                throw caught;
+            return val;
+        }
+    }
 }
