@@ -5,6 +5,10 @@ Includes a full XTerm console, on the Linux version. Standard text window on Win
 
 ![alt tag](https://raw.githubusercontent.com/logicethos/SSHDebugger/master/SSHDebugger.png)
 
+
+Easy to run the SSH Debugger from menu "Run" or with shortcut
+![alt tag](https://raw.githubusercontent.com/Int32Overflow/SSHDebugger/NiceIntegration/MenuIntegrated.png)
+
 Uses:
 
  * Develop .NET apps for embedded devices and small computers such as the Raspberry Pi.
