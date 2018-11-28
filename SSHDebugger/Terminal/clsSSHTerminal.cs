@@ -473,6 +473,13 @@ namespace SSHDebugger
                         case Gdk.Key.BackSpace:
                             charBytes = new byte[] { (byte)'\b' };
                             break;
+                        case Gdk.Key.KP_Tab:
+                        case Gdk.Key.Tab:
+                            charBytes = new byte[] { (byte)'\t' };
+                            break;
+                        case Gdk.Key.Escape:
+                            charBytes = new byte[] { 0x1B }; //ESC
+                            break;
                         default:
                             charBytes = Encoding.UTF8.GetBytes(new char[] { key.GetChar() });
                             break;
@@ -527,7 +534,7 @@ namespace SSHDebugger
 					break;
 				    default:
 					{
-					    var keyValue = (char)Gdk.Keyval.ToUnicode((uint)LastKeyPress);
+                        var keyValue = LastKeyPress.GetChar();
 					    Write(echoChar.HasValue ? echoChar.Value.ToString() : keyValue.ToString());
 					    input += keyValue;
 					}
