@@ -23,7 +23,7 @@ namespace SSHDebugger
 			}catch (Exception ex) {							
 				Gtk.Application.Invoke (delegate {
 					using (var md = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok, ex.Message)) {
-						md.Title = "CustomSoftDebuggerSession";
+						md.Title = "SSH Debugger";
 						md.Run ();
 						md.Destroy ();
 					}
@@ -35,7 +35,6 @@ namespace SSHDebugger
 		protected override void EndSession ()
 		{
 			base.EndSession ();
-
 		}
 
 	}

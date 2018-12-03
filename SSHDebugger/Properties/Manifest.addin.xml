@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Addin id="SSHDebugger"
 	namespace="SSHDebugger"
-	version="0.4">
+	version="0.5">
 	<Header>
 		<Name>SSH Debugger (VTE Xterm version)</Name>
 		<Category>Debugging</Category>
@@ -29,5 +29,17 @@
 		<FileTemplate id="sshhosttemplate"
 			file="ssh-host.xft.xml" />
 	</Extension>
+    
+    <Extension path = "/MonoDevelop/Ide/Commands/Project">
+        <Command id = "SSHDebugger.RunSSHDebugger"
+                 _label = "SSH Debugger"
+                 _description = "Run with SSH Debugger"
+                 shortcut = "Control+Shift+F5"
+                 defaultHandler = "SSHDebugger.SSHDebuggerHandler"/>
+    </Extension>
+    <Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+        <CommandItem id="SSHDebugger.RunSSHDebugger" 
+                     insertafter="MonoDevelop.Debugger.DebugCommands.Debug"/>
+    </Extension>
 
 </Addin>
