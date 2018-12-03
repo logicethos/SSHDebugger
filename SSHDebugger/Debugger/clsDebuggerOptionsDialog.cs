@@ -33,68 +33,72 @@ using System.Linq;
 namespace SSHDebugger
 {
 
-	public class clsDebuggerOptionsDialog : Gtk.Dialog
-	{
-	public clsHost SelectedHost;
-	Gtk.Button newButton = new Gtk.Button  ("New Host");
-	Gtk.Button connectButton = new Gtk.Button ("Run");
-	Gtk.ComboBox combo;
+    public class clsDebuggerOptionsDialog : Gtk.Dialog
+    {
+        public clsHost SelectedHost;
+        Gtk.Button newButton = new Gtk.Button("New Host");
+        Gtk.Button connectButton = new Gtk.Button("Run");
+        Gtk.ComboBox combo;
 
-	const Gtk.ResponseType connectResponse = Gtk.ResponseType.Ok;
-	const Gtk.ResponseType newResponse = Gtk.ResponseType.Accept;
-
-
-	Properties properties;
-
-	//TODO: dropdown menus for picking string substitutions. also substitutions for port, ip
-		public clsDebuggerOptionsDialog () : base (
-		"SSH Debug", MonoDevelop.Ide.MessageService.RootWindow,
-		Gtk.DialogFlags.DestroyWithParent | Gtk.DialogFlags.Modal)
-	{
-		properties = PropertyService.Get ("MonoDevelop.Debugger.Soft.SSHDebug", new Properties());
-
-		AddActionWidget (connectButton, connectResponse);
-		AddActionWidget (newButton, newResponse);
-		AddActionWidget (new Gtk.Button (Gtk.Stock.Cancel), Gtk.ResponseType.Cancel);
-
-		var table = new Gtk.Table (1, 2, false);
-		table.BorderWidth = 6;
-		VBox.PackStart (table, true, true, 0);
-
-		table.Attach (new Gtk.Label ("Host") { Xalign = 0 }, 	 0, 1, 0, 1);
-
-		var values = clsSSHDebuggerEngine.HostsList.Select (x => String.Format ("{0} ({1})", x.Name, System.IO.Path.GetFileName (x.ScriptPath))).ToArray ();
-		combo = new Gtk.ComboBox (values);
-		
-		int row=0;
-		if (clsSSHDebuggerEngine.HostsList.Count == 0) {
-				connectButton.Sensitive = false;
-		} else {
-		
-				var lastSelected = clsSSHDebuggerEngine.HostsList.Find (x => x.ScriptPath == properties.Get<string> ("host", ""));
-				if (lastSelected != null)
-				{
-					row = clsSSHDebuggerEngine.HostsList.IndexOf (lastSelected);
-					if (row == -1)
-						row = 0;
-				}
-				Gtk.TreeIter iter;
-				combo.Model.IterNthChild (out iter, row);
-				combo.SetActiveIter (iter);
-				SelectedHost = clsSSHDebuggerEngine.HostsList [combo.Active];
-
-				combo.Changed += (object sender, EventArgs e) => 
-				{
-					SelectedHost = clsSSHDebuggerEngine.HostsList [combo.Active];
-				};
-
-		}
-
-		table.Attach (combo, 1, 2, 0, 1);
+        const Gtk.ResponseType connectResponse = Gtk.ResponseType.Ok;
+        const Gtk.ResponseType newResponse = Gtk.ResponseType.Accept;
 
 
-		VBox.ShowAll ();
+        Properties properties;
 
-	}
-	}
+        //TODO: dropdown menus for picking string substitutions. also substitutions for port, ip
+        public clsDebuggerOptionsDialog() : base(
+        "SSH Debug", MonoDevelop.Ide.MessageService.RootWindow,
+        Gtk.DialogFlags.DestroyWithParent | Gtk.DialogFlags.Modal)
+        {
+            properties = PropertyService.Get("MonoDevelop.Debugger.Soft.SSHDebug", new Properties());
+
+            AddActionWidget(connectButton, connectResponse);
+            AddActionWidget(newButton, newResponse);
+            AddActionWidget(new Gtk.Button(Gtk.Stock.Cancel), Gtk.ResponseType.Cancel);
+
+            var table = new Gtk.Table(1, 2, false);
+            table.BorderWidth = 6;
+            VBox.PackStart(table, true, true, 0);
+
+            table.Attach(new Gtk.Label("Host") { Xalign = 0 }, 0, 1, 0, 1);
+
+            var values = clsSSHDebuggerEngine.HostsList.Select(x => String.Format("{0} ({1})", x.Name, System.IO.Path.GetFileName(x.ScriptPath))).ToArray();
+            combo = new Gtk.ComboBox(values);
+
+            int row = 0;
+            if (clsSSHDebuggerEngine.HostsList.Count == 0)
+            {
+                connectButton.Sensitive = false;
+            }
+            else
+            {
+
+                var lastSelected = clsSSHDebuggerEngine.HostsList.Find(x => x.ScriptPath == properties.Get<string>("host", ""));
+                if (lastSelected != null)
+                {
+                    row = clsSSHDebuggerEngine.HostsList.IndexOf(lastSelected);
+                    if (row == -1)
+                        row = 0;
+                }
+                Gtk.TreeIter iter;
+                combo.Model.IterNthChild(out iter, row);
+                combo.SetActiveIter(iter);
+                SelectedHost = clsSSHDebuggerEngine.HostsList[combo.Active];
+
+                combo.Changed += (object sender, EventArgs e) =>
+                {
+                    SelectedHost = clsSSHDebuggerEngine.HostsList[combo.Active];
+                };
+
+            }
+
+            table.Attach(combo, 1, 2, 0, 1);
+
+            connectButton.GrabFocus();
+
+            VBox.ShowAll();
+
+        }
+    }
 }
