@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\MonoDevelop.Addins.0.4.5\build\MonoDevelop.Addins.props" Condition="Exists('..\packages\MonoDevelop.Addins.0.4.5\build\MonoDevelop.Addins.props')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.4.7\build\MonoDevelop.Addins.props" Condition="Exists('..\packages\MonoDevelop.Addins.0.4.7\build\MonoDevelop.Addins.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <RootNamespace>SSHDebugger</RootNamespace>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AssemblyName>SSHDebugger</AssemblyName>
-    <ReleaseVersion>0.4</ReleaseVersion>
+    <ReleaseVersion>0.5</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -92,5 +92,5 @@
     <AddinReference Include="MonoDevelop.Debugger" />
     <AddinReference Include="MonoDevelop.Debugger.Soft" />
   </ItemGroup>
-  <Import Project="..\packages\MonoDevelop.Addins.0.4.5\build\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.4.5\build\MonoDevelop.Addins.targets')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.4.7\build\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.4.7\build\MonoDevelop.Addins.targets')" />
 </Project>
