@@ -8,7 +8,7 @@
     <ProjectGuid>{A84F91BF-12DD-4CA1-A9D6-2186E9F2301E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>SSHDebugger</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>SSHDebugger</AssemblyName>
     <ReleaseVersion>0.5</ReleaseVersion>
   </PropertyGroup>
