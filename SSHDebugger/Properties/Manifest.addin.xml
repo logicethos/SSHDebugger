@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Addin id="SSHDebugger"
 	namespace="SSHDebugger"
-	version="0.4">
+	version="0.5">
 	<Header>
 		<Name>SSH Debugger (VTE Xterm version)</Name>
 		<Category>Debugging</Category>
